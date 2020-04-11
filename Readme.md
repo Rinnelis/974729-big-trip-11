@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ксения Зуева](https://up.htmlacademy.ru/ecmascript/11/user/974729).
-* Наставник: `Неизвестно`.
+* Наставник: [Владимир Чебаков](https://up.htmlacademy.ru/ecmascript/11/user/1100789).
 
 ---
 
