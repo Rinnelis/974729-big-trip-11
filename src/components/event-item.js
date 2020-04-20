@@ -1,4 +1,23 @@
-export const createEventItemTemplate = () => {
+import {EVENT_TRANSFER_TYPES, EVENT_ITEMS} from "../const.js";
+import {ucFirstLetter, getRandomMassiveComponent, getRandomNumber} from "../utils.js";
+
+const createEventTitleTemplate = (name, city) => {
+  return (
+    `<div class="event__type">
+      <img class="event__type-icon" width="42" height="42" src="img/icons/${name}.png" alt="Event type icon">
+    </div>
+    <h3 class="event__title">${ucFirstLetter(name)} to ${city}</h3>`
+  );
+};
+
+export const createEventItemTemplate = (offers) => {
+
+  const titles = offers[getRandomNumber(0, offers.length)];
+  const offerTitle = titles.name;
+  const offerPrice = getRandomNumber(10, 100);
+
+  const titlesMarkup = createEventTitleTemplate(getRandomMassiveComponent(EVENT_TRANSFER_TYPES), getRandomMassiveComponent(EVENT_ITEMS));
+
   return (
     `<ul class="trip-days">
       <li class="trip-days__item  day">
@@ -10,10 +29,7 @@ export const createEventItemTemplate = () => {
         <ul class="trip-events__list">
           <li class="trip-events__item">
             <div class="event">
-              <div class="event__type">
-                <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
-              </div>
-              <h3 class="event__title">Taxi to Amsterdam</h3>
+              ${titlesMarkup}
 
               <div class="event__schedule">
                 <p class="event__time">
@@ -26,16 +42,16 @@ export const createEventItemTemplate = () => {
 
               <p class="event__price">
                 &euro;&nbsp;
-                <span class="event__price-value">20</span>
+                <span class="event__price-value">${getRandomNumber(50, 2000)}</span>
               </p>
 
               <h4 class="visually-hidden">Offers:</h4>
               <ul class="event__selected-offers">
                 <li class="event__offer">
-                  <span class="event__offer-title">Order Uber</span>
+                  <span class="event__offer-title">${offerTitle}</span>
                   &plus;
                   &euro;&nbsp;
-                  <span class="event__offer-price">20</span>
+                  <span class="event__offer-price">${offerPrice}</span>
                 </li>
               </ul>
 
