@@ -1,5 +1,6 @@
+import {generateOffers as offers} from "../mock/offer.js";
 import {EVENT_TRANSFER_TYPES, EVENT_ITEMS} from "../const.js";
-import {ucFirstLetter, getRandomMassiveComponent, getRandomNumber} from "../utils.js";
+import {createElement, ucFirstLetter, getRandomMassiveComponent, getRandomNumber} from "../utils.js";
 
 const createEventTitleTemplate = (name, city) => {
   return (
@@ -10,8 +11,7 @@ const createEventTitleTemplate = (name, city) => {
   );
 };
 
-export const createEventItemTemplate = (offers) => {
-
+const createEventItemTemplate = () => {
   const titles = offers[getRandomNumber(0, offers.length)];
   const offerTitle = titles.name;
   const offerPrice = getRandomNumber(10, 100);
@@ -65,3 +65,25 @@ export const createEventItemTemplate = (offers) => {
     </ul>`
   );
 };
+
+export default class EventItem {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventItemTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
