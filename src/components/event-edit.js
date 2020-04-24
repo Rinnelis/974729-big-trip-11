@@ -1,21 +1,19 @@
-import {EVENT_TRANSFER_TYPES, EVENT_ACTIVITY_TYPES, EVENT_ITEMS} from "../const.js";
-import {getRandomMassiveComponent, getRandomNumber} from "../utils.js";
-import {createEventTypeTemplate} from "./event-type.js";
-import {createOfferTemplate} from "./event-offer.js";
+import {EVENT_ITEMS} from "../const.js";
+import {createElement, getRandomMassiveComponent, getRandomNumber} from "../utils.js";
+import EventTypeComponent from "./event-type.js";
+import EventOfferComponent from "./event-offer.js";
 import {descriptionText} from "../mock/description.js";
 
 
-export const createEventEditTemplate = (offers) => {
-
+const createEventEditTemplate = () => {
   const photoSrc = `http://picsum.photos/248/152?r=${Math.random()}`;
   const date = `19/04/20`;
   const time = `11:30`;
 
-  const eventTransfersMarkup = EVENT_TRANSFER_TYPES.map((type, i) => createEventTypeTemplate(type, i === 0)).join(`\n`);
-  const eventActivitiesMarkup = EVENT_ACTIVITY_TYPES.map((type) => createEventTypeTemplate(type)).join(`\n`);
   const eventsMarkup = EVENT_ITEMS.map((item) => `<option value="${item}"></option>`).join(`\n`);
-  const offersMarkup = offers.map((offer) => createOfferTemplate(offer)).join(`\n`);
   const photoMarkup = `<img class="event__photo" src=${photoSrc} alt="Event photo">`;
+  const typeMarkup = new EventTypeComponent().getElement();
+  const offerMarkup = new EventOfferComponent().getElement();
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -30,19 +28,7 @@ export const createEventEditTemplate = (offers) => {
             id="event-type-toggle-1" 
             type="checkbox"
           >
-
-          <div class="event__type-list">
-            <fieldset class="event__type-group">
-              <legend class="visually-hidden">Transfer</legend>
-              ${eventTransfersMarkup}
-            </fieldset>
-
-            <fieldset class="event__type-group">
-              <legend class="visually-hidden">Activity</legend>
-              ${eventActivitiesMarkup}
-              </div>
-            </fieldset>
-          </div>
+          ${typeMarkup.outerHTML}
         </div>
 
         <div class="event__field-group  event__field-group--destination">
@@ -108,10 +94,7 @@ export const createEventEditTemplate = (offers) => {
       <section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${offersMarkup}
-          </div>
+          ${offerMarkup.outerHTML}
         </section>
 
         <section class="event__section  event__section--destination">
@@ -130,3 +113,25 @@ export const createEventEditTemplate = (offers) => {
     </form>`
   );
 };
+
+export default class EventEdit {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,7 +1,7 @@
 import {EVENT_ITEMS, MONTH_NAMES} from "../const.js";
-import {getRandomMassiveComponent, getRandomNumber} from "../utils.js";
+import {createElement, getRandomMassiveComponent, getRandomNumber} from "../utils.js";
 
-export const createMainTripInfoTemplate = () => {
+const createMainTripInfoTemplate = () => {
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
@@ -14,3 +14,25 @@ export const createMainTripInfoTemplate = () => {
     </section>`
   );
 };
+
+export default class MainTripInfo {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMainTripInfoTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
