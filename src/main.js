@@ -19,23 +19,23 @@ render(tripControlsElement, new SiteMenuComponent().getElement(), RenderPosition
 render(tripControlsElement, new FilterComponent().getElement(), RenderPosition.BEFOREEND);
 render(mainContentElement, new SortComponent().getElement(), RenderPosition.BEFOREEND);
 
-const onRollupButtonClick = () => {
-  mainContentElement.replaceChild(eventEditComponent.getElement(), eventItemComponent.getElement());
-};
-
-const onSaveButtonClick = (evt) => {
-  evt.preventDefault();
-  mainContentElement.replaceChild(eventItemComponent.getElement(), eventEditComponent.getElement());
-};
-
-const eventItemComponent = new EventItemComponent();
-const rollupButton = eventItemComponent.getElement().querySelector(`.event__rollup-btn`);
-rollupButton.addEventListener(`click`, onRollupButtonClick);
-
-const eventEditComponent = new EventEditComponent();
-const saveButton = eventEditComponent.getElement().querySelector(`.event__save-btn`);
-saveButton.addEventListener(`click`, onSaveButtonClick);
-
 for (let i = 0; i < EVENT_COUNT; i++) {
+  const onRollupButtonClick = () => {
+    mainContentElement.replaceChild(eventEditComponent.getElement(), eventItemComponent.getElement());
+  };
+
+  const onSaveButtonClick = (evt) => {
+    evt.preventDefault();
+    mainContentElement.replaceChild(eventItemComponent.getElement(), eventEditComponent.getElement());
+  };
+
+  const eventItemComponent = new EventItemComponent();
+  const rollupButton = eventItemComponent.getElement().querySelector(`.event__rollup-btn`);
+  rollupButton.addEventListener(`click`, onRollupButtonClick);
+
+  const eventEditComponent = new EventEditComponent();
+  const saveButton = eventEditComponent.getElement().querySelector(`.event__save-btn`);
+  saveButton.addEventListener(`click`, onSaveButtonClick);
+
   render(mainContentElement, eventItemComponent.getElement(), RenderPosition.BEFOREEND);
 }
