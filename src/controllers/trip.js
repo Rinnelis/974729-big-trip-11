@@ -10,8 +10,6 @@ export default class TripController {
   constructor(container) {
     this._container = container;
     this._noEventsComponent = new NoEventsComponent();
-    this._eventItemComponent = new EventItemComponent();
-    this._eventEditComponent = new EventEditComponent();
   }
 
   render() {
@@ -39,13 +37,14 @@ export default class TripController {
         }
       };
 
-      const eventItemComponent = this._eventItemComponent;
+      const eventItemComponent = new EventItemComponent();
+      const eventEditComponent = new EventEditComponent();
+
       eventItemComponent.setRollupButtonClickHandler(() => {
         replaceEventToEdit();
         document.addEventListener(`keydown`, onEscKeyDown);
       });
 
-      const eventEditComponent = this._eventEditComponent;
       eventEditComponent.setSaveButtonClickHandler(() => {
         replaceEditToEvent();
         document.removeEventListener(`keydown`, onEscKeyDown);
