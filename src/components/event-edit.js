@@ -1,9 +1,9 @@
+import AbstractComponent from "./abstract-component.js";
 import {EVENT_ITEMS} from "../const.js";
-import {createElement, getRandomMassiveComponent, getRandomNumber} from "../utils.js";
+import {getRandomMassiveComponent, getRandomNumber} from "../utils/common.js";
 import EventTypeComponent from "./event-type.js";
 import EventOfferComponent from "./event-offer.js";
 import {descriptionText} from "../mock/description.js";
-
 
 const createEventEditTemplate = () => {
   const photoSrc = `http://picsum.photos/248/152?r=${Math.random()}`;
@@ -114,24 +114,13 @@ const createEventEditTemplate = () => {
   );
 };
 
-export default class EventEdit {
-  constructor() {
-    this._element = null;
-  }
-
+export default class EventEdit extends AbstractComponent {
   getTemplate() {
     return createEventEditTemplate();
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setSaveButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__save-btn`)
+      .addEventListener(`click`, handler);
   }
 }

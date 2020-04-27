@@ -1,5 +1,6 @@
+import AbstractComponent from "./abstract-component.js";
 import {EVENT_TRANSFER_TYPES, EVENT_ACTIVITY_TYPES} from "../const.js";
-import {createElement, ucFirstLetter} from "../utils.js";
+import {ucFirstLetter} from "../utils/common.js";
 
 const createEventTypeMarkup = (name, isChecked) => {
   return (
@@ -37,24 +38,8 @@ const createEventTypeTemplate = () => {
   );
 };
 
-export default class EventType {
-  constructor() {
-    this._element = null;
-  }
-
+export default class EventType extends AbstractComponent {
   getTemplate() {
     return createEventTypeTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -1,6 +1,7 @@
+import AbstractComponent from "./abstract-component.js";
 import {generateOffers as offers} from "../mock/offer.js";
 import {EVENT_TRANSFER_TYPES, EVENT_ITEMS} from "../const.js";
-import {createElement, ucFirstLetter, getRandomMassiveComponent, getRandomNumber} from "../utils.js";
+import {ucFirstLetter, getRandomMassiveComponent, getRandomNumber} from "../utils/common.js";
 
 const createEventTitleTemplate = (name, city) => {
   return (
@@ -66,24 +67,13 @@ const createEventItemTemplate = () => {
   );
 };
 
-export default class EventItem {
-  constructor() {
-    this._element = null;
-  }
-
+export default class EventItem extends AbstractComponent {
   getTemplate() {
     return createEventItemTemplate();
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setRollupButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
   }
 }

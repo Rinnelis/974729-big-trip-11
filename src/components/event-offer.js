@@ -1,5 +1,6 @@
+import AbstractComponent from "./abstract-component.js";
 import {generateOffers as offers} from "../mock/offer.js";
-import {createElement, getRandomNumber} from "../utils.js";
+import {getRandomNumber} from "../utils/common.js";
 
 
 const createOfferMarkup = (offer) => {
@@ -33,24 +34,8 @@ const createOfferTemplate = () => {
   );
 };
 
-export default class EventOffer {
-  constructor() {
-    this._element = null;
-  }
-
+export default class EventOffer extends AbstractComponent {
   getTemplate() {
     return createOfferTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
