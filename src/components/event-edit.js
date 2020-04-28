@@ -1,16 +1,15 @@
 import AbstractComponent from "./abstract-component.js";
-import {EVENT_ITEMS} from "../const.js";
-import {getRandomMassiveComponent, getRandomNumber} from "../utils/common.js";
+import {EVENT_CITIES} from "../mock/event.js";
 import EventTypeComponent from "./event-type.js";
 import EventOfferComponent from "./event-offer.js";
-import {descriptionText} from "../mock/description.js";
 
-const createEventEditTemplate = () => {
+const createEventEditTemplate = (event) => {
+  const {city, time, price, description} = event;
+
   const photoSrc = `http://picsum.photos/248/152?r=${Math.random()}`;
   const date = `19/04/20`;
-  const time = `11:30`;
 
-  const eventsMarkup = EVENT_ITEMS.map((item) => `<option value="${item}"></option>`).join(`\n`);
+  const eventsMarkup = EVENT_CITIES.map((cityName) => `<option value="${cityName}"></option>`).join(`\n`);
   const photoMarkup = `<img class="event__photo" src=${photoSrc} alt="Event photo">`;
   const typeMarkup = new EventTypeComponent().getElement();
   const offerMarkup = new EventOfferComponent().getElement();
@@ -40,7 +39,7 @@ const createEventEditTemplate = () => {
             id="event-destination-1" 
             type="text" 
             name="event-destination" 
-            value="${getRandomMassiveComponent(EVENT_ITEMS)}" 
+            value="${city}" 
             list="destination-list-1"
           >
           <datalist id="destination-list-1">
@@ -83,7 +82,7 @@ const createEventEditTemplate = () => {
             id="event-price-1" 
             type="text" 
             name="event-price" 
-            value="${getRandomNumber(50, 2000)}"
+            value="${price}"
           >
         </div>
 
@@ -100,7 +99,7 @@ const createEventEditTemplate = () => {
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">
-          ${descriptionText}
+          ${description}
           </p>
 
           <div class="event__photos-container">
@@ -115,8 +114,13 @@ const createEventEditTemplate = () => {
 };
 
 export default class EventEdit extends AbstractComponent {
+  constructor(event) {
+    super();
+    this._event = event;
+  }
+
   getTemplate() {
-    return createEventEditTemplate();
+    return createEventEditTemplate(event);
   }
 
   setSaveButtonClickHandler(handler) {
