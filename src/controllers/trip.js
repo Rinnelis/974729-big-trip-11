@@ -68,7 +68,7 @@ const getSortedEvents = (events, sortType) => {
 
 export default class TripController {
   constructor(container) {
-    this._container = container;
+    this._container = container.getElement();
     this._eventsComponent = new EventsComponent();
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
