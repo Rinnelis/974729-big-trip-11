@@ -78,6 +78,7 @@ export default class TripController {
     const container = this._container;
 
     render(container, this._sortComponent, RenderPosition.BEFOREEND);
+    render(container, this._eventsComponent, RenderPosition.BEFOREEND);
 
     if (EVENT_COUNT === ZERO_EVENTS) {
       render(container, this._noEventsComponent, RenderPosition.BEFOREEND);

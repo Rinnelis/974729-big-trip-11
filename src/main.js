@@ -11,7 +11,7 @@ const EVENT_COUNT = 15;
 const siteHeaderElement = document.querySelector(`.page-header__container`);
 const routeAndPriceElement = siteHeaderElement.querySelector(`.trip-main`);
 const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
-const mainContentElement = document.querySelector(`.page-body__container`);
+const mainContentElement = document.querySelector(`.page-main .page-body__container`);
 
 render(routeAndPriceElement, new MainTripInfoComponent(), RenderPosition.AFTERBEGIN);
 render(tripControlsElement, new SiteMenuComponent(), RenderPosition.BEFOREEND);
