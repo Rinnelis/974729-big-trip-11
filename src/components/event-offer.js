@@ -1,7 +1,6 @@
 import AbstractComponent from "./abstract-component.js";
-import {generateOffers as offers} from "../mock/offer.js";
+import {generateEvent} from "../mock/event.js";
 import {getRandomNumber} from "../utils/common.js";
-
 
 const createOfferMarkup = (offer) => {
   const {type, name} = offer;
@@ -25,6 +24,8 @@ const createOfferMarkup = (offer) => {
 };
 
 const createOfferTemplate = () => {
+  const {offers} = generateEvent();
+
   const offersMarkup = offers.map((offer) => createOfferMarkup(offer)).join(`\n`);
 
   return (

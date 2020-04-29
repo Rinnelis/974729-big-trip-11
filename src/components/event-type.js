@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {EVENT_TRANSFER_TYPES, EVENT_ACTIVITY_TYPES} from "../const.js";
+import {generateEvent} from "../mock/event.js";
 import {ucFirstLetter} from "../utils/common.js";
 
 const createEventTypeMarkup = (name, isChecked) => {
@@ -20,8 +20,10 @@ const createEventTypeMarkup = (name, isChecked) => {
 };
 
 const createEventTypeTemplate = () => {
-  const eventTransfersMarkup = EVENT_TRANSFER_TYPES.map((type, i) => createEventTypeMarkup(type, i === 0)).join(`\n`);
-  const eventActivitiesMarkup = EVENT_ACTIVITY_TYPES.map((type) => createEventTypeMarkup(type)).join(`\n`);
+  const {transferTypes, activityTypes} = generateEvent();
+
+  const eventTransfersMarkup = transferTypes.map((type, i) => createEventTypeMarkup(type, i === 0)).join(`\n`);
+  const eventActivitiesMarkup = activityTypes.map((type) => createEventTypeMarkup(type)).join(`\n`);
 
   return (
     `<div class="event__type-list">
