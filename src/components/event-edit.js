@@ -120,7 +120,7 @@ export default class EventEdit extends AbstractComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(event);
+    return createEventEditTemplate(this._event);
   }
 
   setSaveButtonClickHandler(handler) {

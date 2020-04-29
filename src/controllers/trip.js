@@ -50,16 +50,17 @@ const renderEvents = (eventsList, events) => {
 
 const getSortedEvents = (events, sortType) => {
   let sortedEvents = [];
+  const eventsList = events.slice();
 
   switch (sortType) {
     case SortType.EVENT:
-      sortedEvents = events;
+      sortedEvents = eventsList;
       break;
     case SortType.TIME:
-      sortedEvents = events.sort((a, b) => b.duration - a.duration);
+      sortedEvents = eventsList.sort((a, b) => b.duration - a.duration);
       break;
     case SortType.PRICE:
-      sortedEvents = events.sort((a, b) => b.price - a.price);
+      sortedEvents = eventsList.sort((a, b) => b.price - a.price);
       break;
   }
 
@@ -85,6 +86,7 @@ export default class TripController {
     }
 
     const eventListElement = this._eventsComponent.getElement();
+    renderEvents(eventListElement, events);
 
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
       eventListElement.innerHTML = ``;

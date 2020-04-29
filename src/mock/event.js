@@ -47,7 +47,7 @@ const generateEvent = () => {
     city: getRandomMassiveComponent(EVENT_CITIES),
     transferTypes: EVENT_TRANSFER_TYPES,
     activityTypes: EVENT_ACTIVITY_TYPES,
-    time: `${getRandomNumber(-1, 24)}:${getRandomNumber(-1, 61)}`,
+    time: `${getRandomNumber(0, 24)}:${getRandomNumber(0, 61)}`,
     duration: getRandomNumber(1, 60),
     price: getRandomNumber(100, 1000),
     description: descriptionText,

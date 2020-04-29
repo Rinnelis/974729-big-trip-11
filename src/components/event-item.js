@@ -11,12 +11,12 @@ const createEventTitleTemplate = (name, city) => {
 };
 
 const createEventItemTemplate = (event) => {
-  const {city, transferType, time, duration, price, offers} = event;
+  const {city, transferTypes, time, duration, price, offers} = event;
 
   const titles = offers[getRandomNumber(0, offers.length)];
   const offerTitle = titles.name;
 
-  const titlesMarkup = createEventTitleTemplate(getRandomMassiveComponent(transferType), city);
+  const titlesMarkup = createEventTitleTemplate(getRandomMassiveComponent(transferTypes), city);
 
   return (
     `<li class="trip-days__item  day">
@@ -71,7 +71,7 @@ export default class EventItem extends AbstractComponent {
   }
 
   getTemplate() {
-    return createEventItemTemplate(event);
+    return createEventItemTemplate(this._event);
   }
 
   getPrice() {
