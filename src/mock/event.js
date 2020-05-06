@@ -9,10 +9,7 @@ const EVENT_TRANSFER_TYPES = [
   `ship`,
   `transport`,
   `drive`,
-  `flight`
-];
-
-const EVENT_ACTIVITY_TYPES = [
+  `flight`,
   `check-in`,
   `sightseeing`,
   `restaurant`
@@ -45,13 +42,13 @@ Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`;
 const generateEvent = () => {
   return {
     city: getRandomMassiveComponent(EVENT_CITIES),
-    transferTypes: EVENT_TRANSFER_TYPES,
-    activityTypes: EVENT_ACTIVITY_TYPES,
+    type: EVENT_TRANSFER_TYPES,
     time: `${getRandomNumber(0, 24)}:${getRandomNumber(0, 61)}`,
     duration: getRandomNumber(1, 60),
     price: getRandomNumber(100, 1000),
     description: descriptionText,
     offers: additionalOffers,
+    isFavorite: Math.random() > 0.5,
   };
 };
 

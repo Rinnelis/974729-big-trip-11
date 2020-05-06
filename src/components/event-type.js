@@ -20,10 +20,10 @@ const createEventTypeMarkup = (name, isChecked) => {
 };
 
 const createEventTypeTemplate = () => {
-  const {transferTypes, activityTypes} = generateEvent();
+  const {type} = generateEvent();
 
-  const eventTransfersMarkup = transferTypes.map((type, i) => createEventTypeMarkup(type, i === 0)).join(`\n`);
-  const eventActivitiesMarkup = activityTypes.map((type) => createEventTypeMarkup(type)).join(`\n`);
+  const eventTransfersMarkup = type.slice(0, 7).map((typeInstance, i) => createEventTypeMarkup(typeInstance, i === 0)).join(`\n`);
+  const eventActivitiesMarkup = type.slice(8, 10).map((typeInstance) => createEventTypeMarkup(typeInstance)).join(`\n`);
 
   return (
     `<div class="event__type-list">

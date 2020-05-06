@@ -1,50 +1,18 @@
 import SortComponent, {SortType} from "../components/sort.js";
-import EventEditComponent from "../components/event-edit.js";
-import EventItemComponent from "../components/event-item.js";
+import PointController from "./point.js";
 import EventsComponent from "../components/events.js";
 import NoEventsComponent from "../components/no-events.js";
-import {render, replace, RenderPosition} from "../utils/render.js";
+import {render, RenderPosition} from "../utils/render.js";
 
 const EVENT_COUNT = 15;
 const ZERO_EVENTS = 0;
 
-const renderEvent = (eventsList, event) => {
-  const replaceEventToEdit = () => {
-    replace(eventEditComponent, eventItemComponent);
-  };
+const renderEvents = (eventsList, events, onDataChange) => {
+  return events.map((event) => {
+    const pointController = new PointController(eventsList, onDataChange);
+    pointController.render(event);
 
-  const replaceEditToEvent = () => {
-    replace(eventItemComponent, eventEditComponent);
-  };
-
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceEditToEvent();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-
-  const eventItemComponent = new EventItemComponent(event);
-  const eventEditComponent = new EventEditComponent(event);
-
-  eventItemComponent.setRollupButtonClickHandler(() => {
-    replaceEventToEdit();
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
-
-  eventEditComponent.setSaveButtonClickHandler(() => {
-    replaceEditToEvent();
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
-
-  render(eventsList, eventItemComponent, RenderPosition.BEFOREEND);
-};
-
-const renderEvents = (eventsList, events) => {
-  events.forEach((event) => {
-    renderEvent(eventsList, event);
+    return pointController;
   });
 };
 
@@ -70,29 +38,53 @@ const getSortedEvents = (events, sortType) => {
 export default class TripController {
   constructor(container) {
     this._container = container.getElement();
+    this._events = [];
+    this._showedEventControllers = [];
     this._eventsComponent = new EventsComponent();
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
+
+    this._onDataChange = this._onDataChange.bind(this);
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
+    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
   render(events) {
     const container = this._container;
 
     render(container, this._sortComponent, RenderPosition.BEFOREEND);
-    render(container, this._eventsComponent, RenderPosition.BEFOREEND);
 
     if (EVENT_COUNT === ZERO_EVENTS) {
       render(container, this._noEventsComponent, RenderPosition.BEFOREEND);
+    } else {
+      render(container, this._eventsComponent, RenderPosition.BEFOREEND);
     }
 
     const eventListElement = this._eventsComponent.getElement();
     renderEvents(eventListElement, events);
 
-    this._sortComponent.setSortTypeChangeHandler((sortType) => {
-      eventListElement.innerHTML = ``;
-      const sortedEvents = getSortedEvents(events, sortType);
+    const newEvents = renderEvents(eventListElement, events, this._onDataChange);
+    this._showedEventControllers = this._showedEventControllers.concat(newEvents);
+  }
 
-      renderEvents(eventListElement, sortedEvents);
-    });
+  _onDataChange(pointController, oldData, newData) {
+    const index = this._events.findIndex((it) => it === oldData);
+
+    if (index === -1) {
+      return;
+    }
+
+    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
+
+    pointController.render(this._events[index]);
+  }
+
+  _onSortTypeChange(sortType) {
+    const sortedEvents = getSortedEvents(this._events, sortType);
+    const eventListElement = this._eventsComponent.getElement();
+    eventListElement.innerHTML = ``;
+
+    const newEvents = renderEvents(eventListElement, sortedEvents, this._onDataChange);
+    this._showedEventControllers = newEvents;
   }
 }
