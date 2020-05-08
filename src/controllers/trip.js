@@ -3,13 +3,13 @@ import PointController from "./point.js";
 import EventsComponent from "../components/events.js";
 import NoEventsComponent from "../components/no-events.js";
 import {render, RenderPosition} from "../utils/render.js";
+import {EVENT_COUNT} from "../main.js";
 
-const EVENT_COUNT = 15;
 const ZERO_EVENTS = 0;
 
-const renderEvents = (eventsList, events, onDataChange) => {
+const renderEvents = (eventsList, events, onDataChange, onViewChange) => {
   return events.map((event) => {
-    const pointController = new PointController(eventsList, onDataChange);
+    const pointController = new PointController(eventsList, onDataChange, onViewChange);
     pointController.render(event);
 
     return pointController;
@@ -46,6 +46,7 @@ export default class TripController {
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
@@ -63,7 +64,7 @@ export default class TripController {
     const eventListElement = this._eventsComponent.getElement();
     renderEvents(eventListElement, events);
 
-    const newEvents = renderEvents(eventListElement, events, this._onDataChange);
+    const newEvents = renderEvents(eventListElement, events, this._onDataChange, this._onViewChange);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
   }
 
@@ -79,12 +80,16 @@ export default class TripController {
     pointController.render(this._events[index]);
   }
 
+  _onViewChange() {
+    this._showedEventControllers.forEach((controller) => controller.setDefaultView());
+  }
+
   _onSortTypeChange(sortType) {
     const sortedEvents = getSortedEvents(this._events, sortType);
     const eventListElement = this._eventsComponent.getElement();
     eventListElement.innerHTML = ``;
 
-    const newEvents = renderEvents(eventListElement, sortedEvents, this._onDataChange);
+    const newEvents = renderEvents(eventListElement, sortedEvents, this._onDataChange, this._onViewChange);
     this._showedEventControllers = newEvents;
   }
 }
