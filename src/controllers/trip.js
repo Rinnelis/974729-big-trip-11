@@ -25,7 +25,7 @@ const getSortedEvents = (events, sortType) => {
       sortedEvents = eventsList;
       break;
     case SortType.TIME:
-      sortedEvents = eventsList.sort((a, b) => b.duration - a.duration);
+      sortedEvents = eventsList.sort((a, b) => (b.end - b.start) - (a.end - a.start));
       break;
     case SortType.PRICE:
       sortedEvents = eventsList.sort((a, b) => b.price - a.price);
