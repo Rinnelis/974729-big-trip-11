@@ -52,6 +52,7 @@ export default class TripController {
 
   render(events) {
     const container = this._container;
+    this._events = events;
 
     render(container, this._sortComponent, RenderPosition.BEFOREEND);
 
@@ -62,7 +63,6 @@ export default class TripController {
     }
 
     const eventListElement = this._eventsComponent.getElement();
-    renderEvents(eventListElement, events);
 
     const newEvents = renderEvents(eventListElement, events, this._onDataChange, this._onViewChange);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
