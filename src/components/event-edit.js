@@ -8,6 +8,7 @@ import flatpickr from "flatpickr";
 import moment from "moment";
 import "flatpickr/dist/flatpickr.min.css";
 
+
 const createEventEditTemplate = (event) => {
   const {city, typeItem, description, price, start, end, isFavorite} = event;
 
