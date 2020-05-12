@@ -1,10 +1,8 @@
 import AbstractComponent from "./abstract-component.js";
 import {generateEvent} from "../mock/event.js";
-import {getRandomNumber} from "../utils/common.js";
 
 const createOfferMarkup = (offer) => {
-  const {type, name} = offer;
-  const price = getRandomNumber(10, 100);
+  const {type, name, price} = offer;
   return (
     `<div class="event__offer-selector">
       <input 
