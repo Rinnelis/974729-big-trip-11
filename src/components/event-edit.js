@@ -169,7 +169,6 @@ export default class EventEdit extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
-    this.setClickHandler(this._clickHandler);
     this._subscribeOnEvents();
   }
 
@@ -192,8 +191,6 @@ export default class EventEdit extends AbstractSmartComponent {
   setRollupButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, handler);
-
-    this._clickHandler = handler;
   }
 
   _subscribeOnEvents() {

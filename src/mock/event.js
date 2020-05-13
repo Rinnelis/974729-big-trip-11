@@ -74,6 +74,7 @@ const generateEvent = () => {
   const endDate = getRandomDate();
 
   return {
+    id: String(new Date() + Math.random()),
     city: getRandomMassiveComponent(EVENT_CITIES),
     type: EVENT_TYPES,
     start: Math.min(startDate, endDate),

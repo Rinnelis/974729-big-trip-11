@@ -2,15 +2,16 @@ import AbstractComponent from "./abstract-component.js";
 import {getRandomNumber, getRandomMassiveComponent, getDurationTime} from "../utils/common.js";
 import moment from "moment";
 
-const createDayTemplate = (date) => {
+const createDayTemplate = (date, index) => {
   let eventDay = ``;
+  let currentIndex = index + 1;
 
   if (date) {
     const fullDate = moment(date).format(`YYYY-MM-DDThh:mm`);
     const month = moment(date).format(`MMM`);
     const day = moment(date).format(`DD`);
 
-    eventDay = `<span class="day__counter">1</span>
+    eventDay = `<span class="day__counter">${currentIndex}</span>
     <time class="day__date" datetime="${fullDate}">${month} ${day}</time>`;
   }
 
@@ -45,11 +46,12 @@ const createEventItemTemplate = (event) => {
   const randomType = getRandomMassiveComponent(typesArray);
   const titlesMarkup = createEventTitleTemplate(randomType[0], randomType[1], city);
 
-  const day = createDayTemplate(start);
+  const index = 1;
+  const dayMarkup = createDayTemplate(start, index);
 
   return (
     `<li class="trip-days__item  day">
-      ${day}
+      ${dayMarkup}
 
       <ul class="trip-events__list">
         <li class="trip-events__item">
