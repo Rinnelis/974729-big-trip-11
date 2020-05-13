@@ -30,7 +30,7 @@ const createEventEditTemplate = (event) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${typeItem.slice(0, -3).toLowerCase()}.png" alt="Event type icon">
           </label>
           <input 
             class="event__type-toggle  visually-hidden" 
@@ -198,7 +198,11 @@ export default class EventEdit extends AbstractSmartComponent {
 
     element.querySelector(`.event__type-list`)
     .addEventListener(`change`, (evt) => {
+      const icon = element.querySelector(`.event__type-icon`);
       this._typeItem = EVENT_TYPES.get(evt.target.value);
+      icon.src = `img/icons/${evt.target.value}.png`;
+
+      this._event.typeItem = this._typeItem;
       this.rerender();
     });
   }

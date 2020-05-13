@@ -20,11 +20,11 @@ export default class PointController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(event) {
+  render(event, index) {
     const oldEventItemComponent = this._eventItemComponent;
     const oldEventEditComponent = this._eventEditComponent;
 
-    this._eventItemComponent = new EventItemComponent(event);
+    this._eventItemComponent = new EventItemComponent(event, index);
     this._eventEditComponent = new EventEditComponent(event);
 
     this._eventItemComponent.setRollupButtonClickHandler(() => {
