@@ -20,7 +20,7 @@ const createEventEditTemplate = (event) => {
   const descriptionMarkup = description[getRandomNumber(0, description.length)];
   const eventsMarkup = EVENT_CITIES.map((cityName) => `<option value="${cityName}"></option>`).join(`\n`);
   const photoMarkup = `<img class="event__photo" src=${photoSrc} alt="Event photo">`;
-  const typeMarkup = new EventTypeComponent(type).getElement();
+  const typeMarkup = new EventTypeComponent(type, typeItem).getElement();
   const offerMarkup = new EventOfferComponent().getElement();
   const isCheckedFavouriteButton = isFavorite ? `checked` : ``;
 
