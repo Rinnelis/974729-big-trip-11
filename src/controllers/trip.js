@@ -1,16 +1,15 @@
 import SortComponent, {SortType} from "../components/sort.js";
-import PointController from "./point.js";
+import PointController, {Mode as PointControllerMode, EmptyEvent} from "./point.js";
 import EventsComponent from "../components/events.js";
 import NoEventsComponent from "../components/no-events.js";
 import {render, RenderPosition} from "../utils/render.js";
-import {EVENT_COUNT} from "../main.js";
 
-const ZERO_EVENTS = 0;
+const ZERO = 0;
 
 const renderEvents = (eventsList, events, onDataChange, onViewChange) => {
   return events.map((event, index) => {
     const pointController = new PointController(eventsList, onDataChange, onViewChange);
-    pointController.render(event, index);
+    pointController.render(event, index, PointControllerMode.DEFAULT);
 
     return pointController;
   });
@@ -36,27 +35,31 @@ const getSortedEvents = (events, sortType) => {
 };
 
 export default class TripController {
-  constructor(container) {
+  constructor(container, pointsModel) {
     this._container = container.getElement();
-    this._events = [];
+    this._pointsModel = pointsModel;
     this._showedEventControllers = [];
     this._eventsComponent = new EventsComponent();
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
+    this._creatingPoint = null;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this._onFilterChange = this._onFilterChange.bind(this);
+
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+    this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
-  render(events) {
+  render() {
     const container = this._container;
-    this._events = events;
+    const points = this._pointsModel.getPoints();
 
     render(container, this._sortComponent, RenderPosition.BEFOREEND);
 
-    if (EVENT_COUNT === ZERO_EVENTS) {
+    if (points.length === ZERO) {
       render(container, this._noEventsComponent, RenderPosition.BEFOREEND);
     } else {
       render(container, this._eventsComponent, RenderPosition.BEFOREEND);
@@ -64,20 +67,60 @@ export default class TripController {
 
     const eventListElement = this._eventsComponent.getElement();
 
-    const newEvents = renderEvents(eventListElement, events, this._onDataChange, this._onViewChange);
+    const newEvents = renderEvents(eventListElement, points, this._onDataChange, this._onViewChange);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
   }
 
-  _onDataChange(pointController, oldData, newData) {
-    const index = this._events.findIndex((it) => it === oldData);
-
-    if (index === -1) {
+  createPoint() {
+    if (this._creatingPoint) {
       return;
     }
 
-    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
+    const eventListElement = this._eventsComponent.getElement();
+    this._creatingPoint = new PointController(eventListElement, this._onDataChange, this._onViewChange);
+    this._creatingPoint.render(EmptyEvent, PointControllerMode.ADDING);
+    this._onViewChange();
+  }
 
-    pointController.render(this._events[index]);
+  _removePoints() {
+    this._eventsComponent.getElement().innerHTML = ``;
+    this._showedEventControllers.forEach((eventController) => eventController.destroy());
+    this._showedEventControllers = [];
+  }
+
+  _updatePoints() {
+    const eventListElement = this._eventsComponent.getElement();
+
+    this._removePoints();
+    this._showedEventControllers = renderEvents(eventListElement, this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
+    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+  }
+
+  _onDataChange(pointController, oldData, newData) {
+
+    if (oldData === EmptyEvent) {
+      this._creatingPoint = null;
+
+      if (newData === null) {
+        pointController.destroy();
+        this._updatePoints();
+      } else {
+        this._pointsModel.addPoint(newData);
+        pointController.render(newData, PointControllerMode.DEFAULT);
+        this._showedEventControllers = [].concat(pointController, this._showedEventControllers);
+        this._updatePoints();
+      }
+
+    } else if (newData === null) {
+      this._pointsModel.removePoint(oldData.id);
+      this._updatePoints();
+    } else {
+      const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
+
+      if (isSuccess) {
+        pointController.render(newData, PointControllerMode.DEFAULT);
+      }
+    }
   }
 
   _onViewChange() {
@@ -85,11 +128,14 @@ export default class TripController {
   }
 
   _onSortTypeChange(sortType) {
-    const sortedEvents = getSortedEvents(this._events, sortType);
     const eventListElement = this._eventsComponent.getElement();
-    eventListElement.innerHTML = ``;
+    const sortedEvents = getSortedEvents(this._pointsModel.getPoints(), sortType);
 
-    const newEvents = renderEvents(eventListElement, sortedEvents, this._onDataChange, this._onViewChange);
-    this._showedEventControllers = newEvents;
+    this._removePoints();
+    this._showedEventControllers = renderEvents(eventListElement, sortedEvents, this._onDataChange, this._onViewChange);
+  }
+
+  _onFilterChange() {
+    this._updatePoints();
   }
 }

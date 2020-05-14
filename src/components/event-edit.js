@@ -8,7 +8,6 @@ import flatpickr from "flatpickr";
 import moment from "moment";
 import "flatpickr/dist/flatpickr.min.css";
 
-
 const createEventEditTemplate = (event) => {
   const {city, type, typeItem, description, price, start, end, isFavorite} = event;
 
@@ -149,6 +148,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._flatpickr = null;
     this._submitHandler = null;
     this._clickHandler = null;
+    this._deleteButtonClickHandler = null;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
@@ -167,8 +167,21 @@ export default class EventEdit extends AbstractSmartComponent {
     this.rerender();
   }
 
+  removeElement() {
+    if (this._flatpickrStartDate || this._flatpickrEndDate) {
+      this._flatpickrStartDate.destroy();
+      this._flatpickrEndDate.destroy();
+      this._flatpickrStartDate = null;
+      this._flatpickrEndDate = null;
+      this._clickHandler = null;
+    }
+
+    super.removeElement();
+  }
+
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this._subscribeOnEvents();
   }
 
@@ -177,10 +190,22 @@ export default class EventEdit extends AbstractSmartComponent {
     this._applyFlatpickr();
   }
 
+  getData() {
+    const form = this.getElement();
+    return new FormData(form);
+  }
+
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
 
     this._submitHandler = handler;
+  }
+
+  setDeleteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+
+    this._deleteButtonClickHandler = handler;
   }
 
   setFavoriteButtonClickHandler(handler) {

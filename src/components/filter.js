@@ -1,5 +1,11 @@
 import AbstractComponent from "./abstract-component.js";
 
+const FILTER_ID_PREFIX = `filter-`;
+
+const getFilterNameById = (id) => {
+  return id.substring(FILTER_ID_PREFIX.length);
+};
+
 const createFilterMarkup = (name, isChecked) => {
   return (
     `<div class="trip-filters__filter">
@@ -32,5 +38,12 @@ const createFilterTemplate = () => {
 export default class Filter extends AbstractComponent {
   getTemplate() {
     return createFilterTemplate();
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      const filterName = getFilterNameById(evt.target.id);
+      handler(filterName);
+    });
   }
 }
