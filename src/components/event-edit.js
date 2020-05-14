@@ -10,7 +10,7 @@ import "flatpickr/dist/flatpickr.min.css";
 
 
 const createEventEditTemplate = (event) => {
-  const {city, typeItem, description, price, start, end, isFavorite} = event;
+  const {city, type, typeItem, description, price, start, end, isFavorite} = event;
 
   const photoSrc = `http://picsum.photos/248/152?r=${Math.random()}`;
 
@@ -20,7 +20,7 @@ const createEventEditTemplate = (event) => {
   const descriptionMarkup = description[getRandomNumber(0, description.length)];
   const eventsMarkup = EVENT_CITIES.map((cityName) => `<option value="${cityName}"></option>`).join(`\n`);
   const photoMarkup = `<img class="event__photo" src=${photoSrc} alt="Event photo">`;
-  const typeMarkup = new EventTypeComponent().getElement();
+  const typeMarkup = new EventTypeComponent(type).getElement();
   const offerMarkup = new EventOfferComponent().getElement();
   const isCheckedFavouriteButton = isFavorite ? `checked` : ``;
 

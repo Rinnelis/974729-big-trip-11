@@ -1,8 +1,7 @@
 import AbstractComponent from "./abstract-component.js";
-import {generateEvent} from "../mock/event.js";
 import {ucFirstLetter} from "../utils/common.js";
 
-const createEventTypeMarkup = (name, isChecked) => {
+const createEventTypeMarkup = (name) => {
   return (
     `<div class="event__type-item">
       <input 
@@ -10,7 +9,7 @@ const createEventTypeMarkup = (name, isChecked) => {
         class="event__type-input  visually-hidden" 
         type="radio" name="event-type" 
         value="${name}"
-        ${isChecked ? `checked` : ``}
+        ${name.isChecked ? `checked` : ``}
       >
       <label class="event__type-label  event__type-label--${name}" for="event-type-${name}-1"
         >${ucFirstLetter(name)}</label
@@ -19,11 +18,9 @@ const createEventTypeMarkup = (name, isChecked) => {
   );
 };
 
-const createEventTypeTemplate = () => {
-  const {type} = generateEvent();
-
+const createEventTypeTemplate = (type) => {
   const typesArray = Array.from(type);
-  const eventTransfersMarkup = typesArray.slice(0, 7).map((typeInstance, i) => createEventTypeMarkup(typeInstance[0], i === 0)).join(`\n`);
+  const eventTransfersMarkup = typesArray.slice(0, 7).map((typeInstance) => createEventTypeMarkup(typeInstance[0])).join(`\n`);
   const eventActivitiesMarkup = typesArray.slice(7, 10).map((typeInstance) => createEventTypeMarkup(typeInstance[0])).join(`\n`);
 
   return (
@@ -42,7 +39,12 @@ const createEventTypeTemplate = () => {
 };
 
 export default class EventType extends AbstractComponent {
+  constructor(type) {
+    super();
+    this._type = type;
+  }
+
   getTemplate() {
-    return createEventTypeTemplate();
+    return createEventTypeTemplate(this._type);
   }
 }

@@ -42,6 +42,11 @@ export default class PointController {
       }));
     });
 
+    this._eventEditComponent.setSubmitHandler((evt) => {
+      evt.preventDefault();
+      this. _replaceEditToEvent();
+    });
+
     if (oldEventEditComponent && oldEventItemComponent) {
       replace(this._eventItemComponent, oldEventItemComponent);
       replace(this._eventEditComponent, oldEventEditComponent);
