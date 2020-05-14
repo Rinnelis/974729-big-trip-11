@@ -8,8 +8,9 @@ import flatpickr from "flatpickr";
 import moment from "moment";
 import "flatpickr/dist/flatpickr.min.css";
 
+
 const createEventEditTemplate = (event) => {
-  const {city, typeItem, description, price, start, end, isFavorite} = event;
+  const {city, type, typeItem, description, price, start, end, isFavorite} = event;
 
   const photoSrc = `http://picsum.photos/248/152?r=${Math.random()}`;
 
@@ -19,7 +20,7 @@ const createEventEditTemplate = (event) => {
   const descriptionMarkup = description[getRandomNumber(0, description.length)];
   const eventsMarkup = EVENT_CITIES.map((cityName) => `<option value="${cityName}"></option>`).join(`\n`);
   const photoMarkup = `<img class="event__photo" src=${photoSrc} alt="Event photo">`;
-  const typeMarkup = new EventTypeComponent().getElement();
+  const typeMarkup = new EventTypeComponent(type, typeItem).getElement();
   const offerMarkup = new EventOfferComponent().getElement();
   const isCheckedFavouriteButton = isFavorite ? `checked` : ``;
 
@@ -29,7 +30,7 @@ const createEventEditTemplate = (event) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${typeItem.slice(0, -3).toLowerCase()}.png" alt="Event type icon">
           </label>
           <input 
             class="event__type-toggle  visually-hidden" 
@@ -147,6 +148,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._typeItem = event.typeItem;
     this._flatpickr = null;
     this._submitHandler = null;
+    this._clickHandler = null;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
@@ -176,15 +178,9 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   setSubmitHandler(handler) {
-    this.getElement().querySelector(`form`)
-      .addEventListener(`submit`, handler);
+    this.getElement().addEventListener(`submit`, handler);
 
     this._submitHandler = handler;
-  }
-
-  setSaveButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__save-btn`)
-      .addEventListener(`click`, handler);
   }
 
   setFavoriteButtonClickHandler(handler) {
@@ -202,7 +198,11 @@ export default class EventEdit extends AbstractSmartComponent {
 
     element.querySelector(`.event__type-list`)
     .addEventListener(`change`, (evt) => {
+      const icon = element.querySelector(`.event__type-icon`);
       this._typeItem = EVENT_TYPES.get(evt.target.value);
+      icon.src = `img/icons/${evt.target.value}.png`;
+
+      this._event.typeItem = this._typeItem;
       this.rerender();
     });
   }

@@ -2,15 +2,15 @@ import AbstractComponent from "./abstract-component.js";
 import {getRandomNumber, getRandomMassiveComponent, getDurationTime} from "../utils/common.js";
 import moment from "moment";
 
-const createDayTemplate = (date) => {
+const createDayTemplate = (date, index) => {
   let eventDay = ``;
 
-  if (date) {
+  if (date && index) {
     const fullDate = moment(date).format(`YYYY-MM-DDThh:mm`);
     const month = moment(date).format(`MMM`);
     const day = moment(date).format(`DD`);
 
-    eventDay = `<span class="day__counter">1</span>
+    eventDay = `<span class="day__counter">${index}</span>
     <time class="day__date" datetime="${fullDate}">${month} ${day}</time>`;
   }
 
@@ -28,7 +28,7 @@ const createEventTitleTemplate = (key, value, city) => {
   );
 };
 
-const createEventItemTemplate = (event) => {
+const createEventItemTemplate = (event, index) => {
   const {city, type, start, end, price, offers} = event;
 
   const startDate = moment(start).format(`YYYY-MM-DDThh:mm:ss`);
@@ -39,17 +39,17 @@ const createEventItemTemplate = (event) => {
 
   const titles = offers[getRandomNumber(0, offers.length)];
   const offerTitle = titles.name;
-  const offersPrice = titles.price;
+  const offerPrice = titles.price;
 
   const typesArray = Array.from(type);
   const randomType = getRandomMassiveComponent(typesArray);
   const titlesMarkup = createEventTitleTemplate(randomType[0], randomType[1], city);
 
-  const day = createDayTemplate(start);
+  const dayMarkup = createDayTemplate(start, index);
 
   return (
     `<li class="trip-days__item  day">
-      ${day}
+      ${dayMarkup}
 
       <ul class="trip-events__list">
         <li class="trip-events__item">
@@ -76,7 +76,7 @@ const createEventItemTemplate = (event) => {
                 <span class="event__offer-title">${offerTitle}</span>
                 &plus;
                 &euro;&nbsp;
-                <span class="event__offer-price">${offersPrice}</span>
+                <span class="event__offer-price">${offerPrice}</span>
               </li>
             </ul>
 
@@ -91,13 +91,14 @@ const createEventItemTemplate = (event) => {
 };
 
 export default class EventItem extends AbstractComponent {
-  constructor(event) {
+  constructor(event, index) {
     super();
     this._event = event;
+    this._index = index + 1;
   }
 
   getTemplate() {
-    return createEventItemTemplate(this._event);
+    return createEventItemTemplate(this._event, this._index);
   }
 
   setRollupButtonClickHandler(handler) {

@@ -20,11 +20,11 @@ export default class PointController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(event) {
+  render(event, index) {
     const oldEventItemComponent = this._eventItemComponent;
     const oldEventEditComponent = this._eventEditComponent;
 
-    this._eventItemComponent = new EventItemComponent(event);
+    this._eventItemComponent = new EventItemComponent(event, index);
     this._eventEditComponent = new EventEditComponent(event);
 
     this._eventItemComponent.setRollupButtonClickHandler(() => {
@@ -40,6 +40,11 @@ export default class PointController {
       this._onDataChange(this, event, Object.assign({}, event, {
         isFavorite: !event.isFavorite,
       }));
+    });
+
+    this._eventEditComponent.setSubmitHandler((evt) => {
+      evt.preventDefault();
+      this. _replaceEditToEvent();
     });
 
     if (oldEventEditComponent && oldEventItemComponent) {
@@ -64,7 +69,6 @@ export default class PointController {
 
   _replaceEditToEvent() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._eventEditComponent.reset();
     replace(this._eventItemComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;
   }

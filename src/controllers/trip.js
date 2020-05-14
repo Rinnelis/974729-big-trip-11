@@ -8,9 +8,9 @@ import {EVENT_COUNT} from "../main.js";
 const ZERO_EVENTS = 0;
 
 const renderEvents = (eventsList, events, onDataChange, onViewChange) => {
-  return events.map((event) => {
+  return events.map((event, index) => {
     const pointController = new PointController(eventsList, onDataChange, onViewChange);
-    pointController.render(event);
+    pointController.render(event, index);
 
     return pointController;
   });
@@ -52,6 +52,7 @@ export default class TripController {
 
   render(events) {
     const container = this._container;
+    this._events = events;
 
     render(container, this._sortComponent, RenderPosition.BEFOREEND);
 
@@ -62,7 +63,6 @@ export default class TripController {
     }
 
     const eventListElement = this._eventsComponent.getElement();
-    renderEvents(eventListElement, events);
 
     const newEvents = renderEvents(eventListElement, events, this._onDataChange, this._onViewChange);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
