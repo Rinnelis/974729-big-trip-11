@@ -21,8 +21,8 @@ const createEventTypeMarkup = (type, chosen) => {
 const createEventTypeTemplate = (type, chosenType) => {
   const typesArray = Array.from(type);
   const chosen = chosenType.slice(0, -3).toLowerCase();
-  const eventTransfersMarkup = typesArray.slice(0, 7).map((typeInstance) => createEventTypeMarkup(typeInstance[0]), chosen).join(`\n`);
-  const eventActivitiesMarkup = typesArray.slice(7, 10).map((typeInstance) => createEventTypeMarkup(typeInstance[0]), chosen).join(`\n`);
+  const eventTransfersMarkup = typesArray.slice(0, 7).map((typeInstance) => createEventTypeMarkup(typeInstance[0], chosen)).join(`\n`);
+  const eventActivitiesMarkup = typesArray.slice(7, 10).map((typeInstance) => createEventTypeMarkup(typeInstance[0], chosen)).join(`\n`);
 
   return (
     `<div class="event__type-list">
