@@ -12,11 +12,11 @@ export const EmptyEvent = {
   id: String(Date.now() + Math.random()),
   city: ``,
   type: `bus`,
-  typeItem: `bus`,
-  description: ``,
-  offers: [],
   start: new Date(),
   end: new Date(),
+  description: ``,
+  offers: [],
+  photos: [],
   price: 0,
   isFavorite: false
 };
@@ -78,6 +78,7 @@ export default class PointController {
           remove(oldEventItemComponent);
           remove(oldEventEditComponent);
         }
+        this._onViewChange();
         document.addEventListener(`keydown`, this._onEscKeyDown);
         render(this._container, this._eventEditComponent, RenderPosition.AFTERBEGIN);
         break;

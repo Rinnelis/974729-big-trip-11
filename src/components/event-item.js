@@ -1,6 +1,20 @@
 import AbstractComponent from "./abstract-component.js";
-import {getRandomNumber, getRandomMassiveComponent, getDurationTime} from "../utils/common.js";
+import {getDurationTime} from "../utils/common.js";
+import {Direction} from "../mock/event.js";
+import {ucFirstLetter} from "../utils/common.js";
 import moment from "moment";
+
+const createOffersTemplate = (offers) => {
+  return offers.map((offer) => {
+    return (
+      `<li class="event__offer">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;
+        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+      </li>`
+    );
+  }).join(``);
+};
 
 const createDayTemplate = (date, index) => {
   let eventDay = ``;
@@ -19,12 +33,19 @@ const createDayTemplate = (date, index) => {
   );
 };
 
-const createEventTitleTemplate = (key, value, city) => {
+const createTypesTemplate = (type, city) => {
+  let rightDirection;
+  if (type === `check-in` || type === `sightseeing` || type === `restaurant`) {
+    rightDirection = Direction.IN;
+  } else {
+    rightDirection = Direction.TO;
+  }
+
   return (
     `<div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src="img/icons/${key}.png" alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${value} ${city}</h3>`
+    <h3 class="event__title">${ucFirstLetter(type)} ${rightDirection} ${city}</h3>`
   );
 };
 
@@ -37,13 +58,8 @@ const createEventItemTemplate = (event, index) => {
   const endTime = moment(end).format(`HH:mm`);
   const durationTime = getDurationTime(end - start);
 
-  const titles = offers[getRandomNumber(0, offers.length)];
-  const offerTitle = titles.name;
-  const offerPrice = titles.price;
-
-  const typesArray = Array.from(type);
-  const randomType = getRandomMassiveComponent(typesArray);
-  const titlesMarkup = createEventTitleTemplate(randomType[0], randomType[1], city);
+  const offersMarkup = createOffersTemplate(offers);
+  const typesMarkup = createTypesTemplate(type, city);
 
   const dayMarkup = createDayTemplate(start, index);
 
@@ -54,7 +70,7 @@ const createEventItemTemplate = (event, index) => {
       <ul class="trip-events__list">
         <li class="trip-events__item">
           <div class="event">
-            ${titlesMarkup}
+            ${typesMarkup}
 
             <div class="event__schedule">
               <p class="event__time">
@@ -72,12 +88,7 @@ const createEventItemTemplate = (event, index) => {
 
             <h4 class="visually-hidden">Offers:</h4>
             <ul class="event__selected-offers">
-              <li class="event__offer">
-                <span class="event__offer-title">${offerTitle}</span>
-                &plus;
-                &euro;&nbsp;
-                <span class="event__offer-price">${offerPrice}</span>
-              </li>
+              ${offersMarkup}
             </ul>
 
             <button class="event__rollup-btn" type="button">
