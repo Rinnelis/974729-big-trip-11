@@ -60,6 +60,7 @@ export default class PointController {
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
       const data = this._eventEditComponent.getData();
+      this._replaceEditToEvent();
       this._onDataChange(this, event, data);
     });
     this._eventEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, event, null));

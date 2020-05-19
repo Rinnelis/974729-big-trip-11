@@ -15,6 +15,7 @@ const createOffersTemplate = (offers) => {
           class="event__offer-checkbox  visually-hidden" 
           id="event-offer-${offer.type}-1" 
           type="checkbox" 
+          value="event-offer"
           name="event-offer-${offer.type}" 
         >
         <label class="event__offer-label" for="event-offer-${offer.type}-1">
@@ -286,6 +287,7 @@ export default class EventEdit extends AbstractSmartComponent {
       start: formData.get(`event-start-time`),
       end: formData.get(`event-end-time`),
       price: formData.get(`event-price`),
+      offers: formData.getAll(`event-offer`),
     };
     return Object.assign({}, this._event, newEvent);
   }
