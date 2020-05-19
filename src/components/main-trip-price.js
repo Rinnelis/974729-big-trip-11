@@ -1,18 +1,19 @@
 import AbstractComponent from "./abstract-component.js";
-import {generateEvent} from "../mock/event.js";
 
-const createMainTripPriceTemplate = () => {
-  const {price} = generateEvent();
-
+const createMainTripPriceTemplate = (events) => {
   return (
     `<p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">${price}</span>
+      Total: &euro;&nbsp;<span class="trip-info__cost-value">${events.map((event) => event.price).reduce((sum, current) => sum + current, 0)}</span>
     </p>`
   );
 };
 
 export default class MainTripPrice extends AbstractComponent {
+  constructor(events) {
+    super();
+    this._events = events;
+  }
   getTemplate() {
-    return createMainTripPriceTemplate();
+    return createMainTripPriceTemplate(this._events);
   }
 }

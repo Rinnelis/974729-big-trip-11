@@ -181,32 +181,33 @@ const createEventEditTemplate = (event) => {
           </svg>
         </label>
 
-        <button class="event__rollup-btn ${creatingPoint ? `visually-hidden` : ``}" type="button">
+        ${creatingPoint ? `` : `
+        <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
-        </button>
+        </button>`}
       </header>
-            
-      <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          <div class="event__available-offers">
-          ${offerMarkup}
-          </div>
-        </section>
 
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">
-          ${description}
-          </p>
-
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${photoMarkup}
+      ${offers.length > 0 || description.length > 0 ?
+      `<section class="event__details">
+          ${offers.length > 0 ?
+      `<section class="event__section  event__section--offers">
+            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+            <div class="event__available-offers">
+            ${offerMarkup}
             </div>
-          </div>
-        </section>
-      </section>
+          </section>` : ``}
+          ${description.length > 0 ?
+      `<section class="event__section  event__section--destination">
+            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+            <p class="event__destination-description">${description}</p>
+            ${photos.length > 0 ?
+      `<div class="event__photos-container">
+              <div class="event__photos-tape">
+              ${photoMarkup}
+              </div>
+            </div>` : ``}
+          </section>` : ``}
+        </section>` : ``}
     </form>`
   );
 };
@@ -284,8 +285,8 @@ export default class EventEdit extends AbstractSmartComponent {
     const formData = new FormData(form);
     const newEvent = {
       city: formData.get(`event-destination`),
-      start: formData.get(`event-start-time`),
-      end: formData.get(`event-end-time`),
+      start: moment(formData.get(`event-start-time`), `DD/MM/YY HH:mm`).valueOf(),
+      end: moment(formData.get(`event-end-time`), `DD/MM/YY HH:mm`).valueOf(),
       price: formData.get(`event-price`),
       offers: formData.getAll(`event-offer`),
     };
@@ -313,10 +314,11 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   setClickHandler(handler) {
-    this.getElement().querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, handler);
-
-    this._clickHandler = handler;
+    const button = this.getElement().querySelector(`.event__rollup-btn`);
+    if (button) {
+      button.addEventListener(`click`, handler);
+      this._clickHandler = handler;
+    }
   }
 
   _subscribeOnEvents() {

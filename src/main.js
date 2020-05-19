@@ -7,7 +7,7 @@ import PointsModel from "./models/points.js";
 import {generateEvents} from "./mock/event.js";
 import {render, RenderPosition} from "./utils/render.js";
 
-export const EVENT_COUNT = 15;
+export const EVENT_COUNT = 1;
 
 const siteHeaderElement = document.querySelector(`.page-header__container`);
 const routeAndPriceElement = siteHeaderElement.querySelector(`.trip-main`);
@@ -20,7 +20,7 @@ const filterController = new FilterController(tripControlsElement, pointsModel);
 const boardComponent = new BoardComponent();
 const tripController = new TripController(boardComponent, pointsModel);
 
-render(routeAndPriceElement, new MainTripInfoComponent(), RenderPosition.AFTERBEGIN);
+render(routeAndPriceElement, new MainTripInfoComponent(events), RenderPosition.AFTERBEGIN);
 render(tripControlsElement, siteMenuComponent, RenderPosition.BEFOREEND);
 
 pointsModel.setPoints(events);

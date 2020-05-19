@@ -3,6 +3,7 @@ import PointController, {Mode as PointControllerMode, EmptyEvent} from "./point.
 import EventsComponent from "../components/events.js";
 import NoEventsComponent from "../components/no-events.js";
 import {render, RenderPosition} from "../utils/render.js";
+import {FILTER_TYPE} from "../const.js";
 
 const ZERO = 0;
 
@@ -77,6 +78,18 @@ export default class TripController {
     }
 
     const eventListElement = this._eventsComponent.getElement();
+
+    const sortedEvents = getSortedEvents(this._pointsModel.getPointsAll(), SortType.EVENT);
+    this._removePoints();
+    const sort = document.querySelector(`#sort-event`);
+    sort.checked = true;
+    this._showedEventControllers = renderEvents(eventListElement, sortedEvents, this._onDataChange, this._onViewChange);
+
+    const filteredEvents = getSortedEvents(this._pointsModel.getPoints(), FILTER_TYPE.EVERYTHING);
+    const filter = document.querySelector(`#filter-everything`);
+    filter.checked = true;
+    this._showedEventControllers = renderEvents(eventListElement, filteredEvents, this._onDataChange, this._onViewChange);
+
     this._creatingPoint = new PointController(eventListElement, this._onDataChange, this._onViewChange);
     this._creatingPoint.render(EmptyEvent, 0, PointControllerMode.ADDING);
     this._onViewChange();
@@ -106,7 +119,7 @@ export default class TripController {
         this._updatePoints();
       } else {
         this._pointsModel.addPoint(newData);
-        pointController.render(newData, PointControllerMode.DEFAULT);
+        pointController.render(newData, 0, PointControllerMode.DEFAULT);
         this._showedEventControllers = [].concat(pointController, this._showedEventControllers);
         this._updatePoints();
       }
@@ -118,7 +131,7 @@ export default class TripController {
       const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
 
       if (isSuccess) {
-        pointController.render(newData, PointControllerMode.DEFAULT);
+        pointController.render(newData, 0, PointControllerMode.DEFAULT);
       }
     }
   }
