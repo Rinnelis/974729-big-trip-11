@@ -280,7 +280,14 @@ export default class EventEdit extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement();
-    return new FormData(form);
+    const formData = new FormData(form);
+    const newEvent = {
+      city: formData.get(`event-destination`),
+      start: formData.get(`event-start-time`),
+      end: formData.get(`event-end-time`),
+      price: formData.get(`event-price`),
+    };
+    return Object.assign({}, this._event, newEvent);
   }
 
   setSubmitHandler(handler) {
