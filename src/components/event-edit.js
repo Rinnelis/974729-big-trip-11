@@ -42,7 +42,7 @@ const createEventTypeMarkup = (type, chosenType) => {
         class="event__type-input  visually-hidden" 
         type="radio" name="event-type" 
         value="${type}"
-        ${type === chosenType ? `checked` : ``}
+        ${type === chosenType.toLowerCase() ? `checked` : ``}
       >
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1"
         >${ucFirstLetter(type)}</label
@@ -71,7 +71,7 @@ const createEventEditTemplate = (event) => {
   const eventActivitiesMarkup = typesArray.slice(7, 10).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
 
   let rightDirection;
-  if (type === `check-in` || type === `sightseeing` || type === `restaurant`) {
+  if (type === `Check-in` || type === `Sightseeing` || type === `Restaurant` || type === `check-in` || type === `sightseeing` || type === `restaurant`) {
     rightDirection = Direction.IN;
   } else {
     rightDirection = Direction.TO;
@@ -180,7 +180,7 @@ const createEventEditTemplate = (event) => {
           </svg>
         </label>
 
-        <button class="event__rollup-btn" type="button">
+        <button class="event__rollup-btn ${creatingPoint ? `visually-hidden` : ``}" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
@@ -215,17 +215,33 @@ export default class EventEdit extends AbstractSmartComponent {
     super();
     this._event = event;
     this._type = event.type;
-    this._flatpickr = null;
+    this._city = event.city;
+    this._price = event.price;
+    this._description = event.description;
+    this._offers = event.offers;
+    this._photos = event.photos;
+
+    this._element = null;
+    this._flatpickrStartDate = null;
+    this._flatpickrEndDate = null;
+
+    this._favoriteClickHandler = null;
     this._submitHandler = null;
-    this._clickHandler = null;
     this._deleteButtonClickHandler = null;
+    this._clickHandler = null;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event);
+    return createEventEditTemplate(this._event, {
+      type: this._type,
+      city: this._city,
+      description: this._description,
+      offers: this._offers,
+      photos: this._photos,
+    });
   }
 
   reset() {
@@ -251,6 +267,8 @@ export default class EventEdit extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
+    this.setFavoriteButtonClickHandler(this._favoriteClickHandler);
+    this.setClickHandler(this._clickHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this._subscribeOnEvents();
   }
@@ -281,11 +299,15 @@ export default class EventEdit extends AbstractSmartComponent {
   setFavoriteButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-checkbox`)
       .addEventListener(`click`, handler);
+
+    this._favoriteClickHandler = handler;
   }
 
-  setRollupButtonClickHandler(handler) {
+  setClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, handler);
+
+    this._clickHandler = handler;
   }
 
   _subscribeOnEvents() {

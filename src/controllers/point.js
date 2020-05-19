@@ -42,12 +42,12 @@ export default class PointController {
     this._eventItemComponent = new EventItemComponent(event, index);
     this._eventEditComponent = new EventEditComponent(event);
 
-    this._eventItemComponent.setRollupButtonClickHandler(() => {
+    this._eventItemComponent.setClickHandler(() => {
       this._replaceEventToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._eventEditComponent.setRollupButtonClickHandler(() => {
+    this._eventEditComponent.setClickHandler(() => {
       this._replaceEditToEvent();
     });
 

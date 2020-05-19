@@ -78,7 +78,7 @@ export default class TripController {
 
     const eventListElement = this._eventsComponent.getElement();
     this._creatingPoint = new PointController(eventListElement, this._onDataChange, this._onViewChange);
-    this._creatingPoint.render(EmptyEvent, PointControllerMode.ADDING);
+    this._creatingPoint.render(EmptyEvent, 0, PointControllerMode.ADDING);
     this._onViewChange();
   }
 
