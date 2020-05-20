@@ -104,7 +104,7 @@ const generateEvent = () => {
     type: getRandomMassiveComponent(TYPES),
     start: Math.min(startDate, endDate),
     end: Math.max(startDate, endDate),
-    price: getRandomNumber(100, 1000),
+    price: getRandomNumber(10, 100),
     description: DESCRIPTIONS[getRandomNumber(0, DESCRIPTIONS.length)],
     photos: getRandomPhotos(),
     offers: getRandomOffers(),

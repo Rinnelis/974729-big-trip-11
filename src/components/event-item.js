@@ -16,23 +16,6 @@ const createOffersTemplate = (offers) => {
   }).join(``);
 };
 
-const createDayTemplate = (date, index) => {
-  let eventDay = ``;
-
-  if (date && index) {
-    const fullDate = moment(date).format(`YYYY-MM-DDThh:mm`);
-    const month = moment(date).format(`MMM`);
-    const day = moment(date).format(`DD`);
-
-    eventDay = `<span class="day__counter">${index}</span>
-    <time class="day__date" datetime="${fullDate}">${month} ${day}</time>`;
-  }
-
-  return (
-    `<div class="day__info">${eventDay}</div>`
-  );
-};
-
 const createTypesTemplate = (type, city) => {
   let rightDirection;
   if (type === `check-in` || type === `sightseeing` || type === `restaurant`) {
@@ -49,7 +32,7 @@ const createTypesTemplate = (type, city) => {
   );
 };
 
-const createEventItemTemplate = (event, index) => {
+const createEventItemTemplate = (event) => {
   const {city, type, start, end, price, offers} = event;
 
   const startDate = moment(start).format(`YYYY-MM-DDThh:mm:ss`);
@@ -61,55 +44,46 @@ const createEventItemTemplate = (event, index) => {
   const offersMarkup = createOffersTemplate(offers);
   const typesMarkup = createTypesTemplate(type, city);
 
-  const dayMarkup = createDayTemplate(start, index);
-
   return (
-    `<li class="trip-days__item  day">
-      ${dayMarkup}
+    `<li class="trip-events__item">
+      <div class="event">
+        ${typesMarkup}
 
-      <ul class="trip-events__list">
-        <li class="trip-events__item">
-          <div class="event">
-            ${typesMarkup}
+        <div class="event__schedule">
+          <p class="event__time">
+            <time class="event__start-time" datetime="${startDate}">${startTime}</time>
+            &mdash;
+            <time class="event__end-time" datetime="${endDate}">${endTime}</time>
+          </p>
+          <p class="event__duration">${durationTime}</p>
+        </div>
 
-            <div class="event__schedule">
-              <p class="event__time">
-                <time class="event__start-time" datetime="${startDate}">${startTime}</time>
-                &mdash;
-                <time class="event__end-time" datetime="${endDate}">${endTime}</time>
-              </p>
-              <p class="event__duration">${durationTime}</p>
-            </div>
+        <p class="event__price">
+          &euro;&nbsp;
+          <span class="event__price-value">${price}</span>
+        </p>
 
-            <p class="event__price">
-              &euro;&nbsp;
-              <span class="event__price-value">${price}</span>
-            </p>
+        <h4 class="visually-hidden">Offers:</h4>
+        <ul class="event__selected-offers">
+          ${offersMarkup}
+        </ul>
 
-            <h4 class="visually-hidden">Offers:</h4>
-            <ul class="event__selected-offers">
-              ${offersMarkup}
-            </ul>
-
-            <button class="event__rollup-btn" type="button">
-              <span class="visually-hidden">Open event</span>
-            </button>
-          </div>
-        </li>
-      </ul>
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+      </div>
     </li>`
   );
 };
 
 export default class EventItem extends AbstractComponent {
-  constructor(event, index) {
+  constructor(event) {
     super();
     this._event = event;
-    this._index = index + 1;
   }
 
   getTemplate() {
-    return createEventItemTemplate(this._event, this._index);
+    return createEventItemTemplate(this._event);
   }
 
   setClickHandler(handler) {

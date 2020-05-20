@@ -34,12 +34,12 @@ export default class PointController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(event, index, mode) {
+  render(event, mode) {
     const oldEventItemComponent = this._eventItemComponent;
     const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
 
-    this._eventItemComponent = new EventItemComponent(event, index);
+    this._eventItemComponent = new EventItemComponent(event);
     this._eventEditComponent = new EventEditComponent(event);
 
     this._eventItemComponent.setClickHandler(() => {
