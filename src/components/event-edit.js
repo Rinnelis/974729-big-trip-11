@@ -7,6 +7,7 @@ import flatpickr from "flatpickr";
 import moment from "moment";
 import "flatpickr/dist/flatpickr.min.css";
 
+
 const createOffersTemplate = (offers) => {
   return offers.map((offer) => {
     return (
