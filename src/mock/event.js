@@ -12,54 +12,69 @@ const getRandomDate = () => {
 };
 
 export const EVENT_TYPES = new Map([
-  [`taxi`, `Taxi to`],
-  [`bus`, `Bus to`],
-  [`train`, `Train to`],
-  [`ship`, `Ship to`],
-  [`transport`, `Transport to`],
-  [`drive`, `Drive to`],
-  [`flight`, `Flight to`],
-  [`check-in`, `Check-in in`],
-  [`sightseeing`, `Sightseeing in`],
-  [`restaurant`, `Restaurant in`]
+  [`taxi`, `Taxi`],
+  [`bus`, `Bus`],
+  [`train`, `Train`],
+  [`ship`, `Ship`],
+  [`transport`, `Transport`],
+  [`drive`, `Drive`],
+  [`flight`, `Flight`],
+  [`check-in`, `Check-in`],
+  [`sightseeing`, `Sightseeing`],
+  [`restaurant`, `Restaurant`]
 ]);
 
-const TYPES = [
-  `Taxi to`,
-  `Bus to`,
-  `Train to`,
-  `Ship to`,
-  `Transport to`,
-  `Drive to`,
-  `Flight to`,
-  `Check-in in`,
-  `Sightseeing in`,
-  `Restaurant in`
+export const TYPES = [
+  `taxi`,
+  `bus`,
+  `train`,
+  `ship`,
+  `transport`,
+  `drive`,
+  `flight`,
+  `check-in`,
+  `sightseeing`,
+  `restaurant`
 ];
+
+export const Direction = {
+  TO: `to`,
+  IN: `in`,
+};
 
 const EVENT_CITIES = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`];
 
 const additionalOffers = [{
   type: `luggage`,
-  name: `Add luggage`,
+  title: `Add luggage`,
   price: 25
 }, {
   type: `comfort`,
-  name: `Switch to comfort class`,
+  title: `Switch to comfort class`,
   price: 50
 }, {
   type: `meal`,
-  name: `Add meal`,
+  title: `Add meal`,
   price: 10
 }, {
   type: `seats`,
-  name: `Choose seats`,
+  title: `Choose seats`,
   price: 5
 }, {
   type: `train`,
-  name: `Travel by train`,
+  title: `Travel by train`,
   price: 100
 }];
+
+const getRandomOffers = () => {
+  const currentOffers = [];
+
+  for (let i = 0; i < getRandomNumber(0, 4); i++) {
+    currentOffers.push(additionalOffers[i]);
+  }
+
+  return currentOffers;
+};
 
 const DESCRIPTIONS = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -69,6 +84,16 @@ const DESCRIPTIONS = [
   `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`
 ];
 
+const getRandomPhotos = () => {
+  const currentPhotos = [];
+
+  for (let i = 0; i < getRandomNumber(1, 5); i++) {
+    currentPhotos.push(`http://picsum.photos/248/152?r=${Math.random()}`);
+  }
+
+  return currentPhotos;
+};
+
 const generateEvent = () => {
   const startDate = getRandomDate();
   const endDate = getRandomDate();
@@ -76,14 +101,14 @@ const generateEvent = () => {
   return {
     id: String(new Date() + Math.random()),
     city: getRandomMassiveComponent(EVENT_CITIES),
-    type: EVENT_TYPES,
+    type: getRandomMassiveComponent(TYPES),
     start: Math.min(startDate, endDate),
     end: Math.max(startDate, endDate),
-    price: getRandomNumber(100, 1000),
-    description: DESCRIPTIONS,
-    offers: additionalOffers,
+    price: getRandomNumber(10, 100),
+    description: DESCRIPTIONS[getRandomNumber(0, DESCRIPTIONS.length)],
+    photos: getRandomPhotos(),
+    offers: getRandomOffers(),
     isFavorite: Math.random() > 0.5,
-    typeItem: getRandomMassiveComponent(TYPES)
   };
 };
 

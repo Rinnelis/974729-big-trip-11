@@ -1,27 +1,84 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {EVENT_CITIES, EVENT_TYPES} from "../mock/event.js";
-import {getRandomNumber} from "../utils/common.js";
-import EventTypeComponent from "./event-type.js";
-import EventOfferComponent from "./event-offer.js";
+import {EVENT_CITIES, EVENT_TYPES, TYPES, Direction} from "../mock/event.js";
+import {ucFirstLetter} from "../utils/common.js";
+import {EmptyEvent} from '../controllers/point.js';
 
 import flatpickr from "flatpickr";
 import moment from "moment";
 import "flatpickr/dist/flatpickr.min.css";
 
+const createOffersTemplate = (offers) => {
+  return offers.map((offer) => {
+    return (
+      `<div class="event__offer-selector">
+        <input 
+          class="event__offer-checkbox  visually-hidden" 
+          id="event-offer-${offer.type}-1" 
+          type="checkbox" 
+          value="event-offer"
+          name="event-offer-${offer.type}" 
+        >
+        <label class="event__offer-label" for="event-offer-${offer.type}-1">
+          <span class="event__offer-title">${offer.title}</span>
+          &plus;
+          &euro;&nbsp;
+          <span class="event__offer-price">${offer.price}</span>
+        </label>
+      </div>`
+    );
+  }).join(``);
+};
+
+const createPhotosTemplate = (photos) => {
+  return photos.map((photo) => {
+    return (`<img class="event__photo" src="${photo}" alt="Event photo">`);
+  }).join(``);
+};
+
+const createEventTypeMarkup = (type, chosenType) => {
+  return (
+    `<div class="event__type-item">
+      <input 
+        id="event-type-${type}-1" 
+        class="event__type-input  visually-hidden" 
+        type="radio" name="event-type" 
+        value="${type}"
+        ${type === chosenType.toLowerCase() ? `checked` : ``}
+      >
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1"
+        >${ucFirstLetter(type)}</label
+      >
+    </div>`
+  );
+};
 
 const createEventEditTemplate = (event) => {
-  const {city, type, typeItem, description, price, start, end, isFavorite} = event;
+  const {city, type, description, photos, offers, price, start, end, isFavorite} = event;
 
-  const photoSrc = `http://picsum.photos/248/152?r=${Math.random()}`;
+  let creatingPoint = false;
+
+  if (event === EmptyEvent) {
+    creatingPoint = true;
+  }
 
   const startDate = moment(start).format(`DD/MM/YY HH:mm`);
   const endDate = moment(end).format(`DD/MM/YY HH:mm`);
 
-  const descriptionMarkup = description[getRandomNumber(0, description.length)];
   const eventsMarkup = EVENT_CITIES.map((cityName) => `<option value="${cityName}"></option>`).join(`\n`);
-  const photoMarkup = `<img class="event__photo" src=${photoSrc} alt="Event photo">`;
-  const typeMarkup = new EventTypeComponent(type, typeItem).getElement();
-  const offerMarkup = new EventOfferComponent().getElement();
+  const photoMarkup = createPhotosTemplate(photos);
+
+  const typesArray = TYPES;
+  const eventTransfersMarkup = typesArray.slice(0, 7).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
+  const eventActivitiesMarkup = typesArray.slice(7, 10).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
+
+  let rightDirection;
+  if (type === `Check-in` || type === `Sightseeing` || type === `Restaurant` || type === `check-in` || type === `sightseeing` || type === `restaurant`) {
+    rightDirection = Direction.IN;
+  } else {
+    rightDirection = Direction.TO;
+  }
+
+  const offerMarkup = createOffersTemplate(offers);
   const isCheckedFavouriteButton = isFavorite ? `checked` : ``;
 
   return (
@@ -30,19 +87,29 @@ const createEventEditTemplate = (event) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${typeItem.slice(0, -3).toLowerCase()}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
           <input 
             class="event__type-toggle  visually-hidden" 
             id="event-type-toggle-1" 
             type="checkbox"
           >
-          ${typeMarkup.outerHTML}
+          <div class="event__type-list">
+            <fieldset class="event__type-group">
+              <legend class="visually-hidden">Transfer</legend>
+              ${eventTransfersMarkup}
+            </fieldset>
+
+            <fieldset class="event__type-group">
+              <legend class="visually-hidden">Activity</legend>
+              ${eventActivitiesMarkup}
+            </fieldset>
+          </div>
         </div>
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${typeItem}
+            ${ucFirstLetter(type)} ${rightDirection}
           </label>
           <input 
             class="event__input  event__input--destination" 
@@ -51,6 +118,7 @@ const createEventEditTemplate = (event) => {
             name="event-destination" 
             value="${city}" 
             list="destination-list-1"
+            
           >
           <datalist id="destination-list-1">
             ${eventsMarkup}
@@ -90,14 +158,15 @@ const createEventEditTemplate = (event) => {
           <input 
             class="event__input  event__input--price" 
             id="event-price-1" 
-            type="text" 
+            type="text"
             name="event-price" 
             value="${price}"
+            pattern="^[ 0-9]+$"
           >
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__reset-btn" type="reset">${creatingPoint ? `Cancel` : `Delete`}</button>
 
         <input 
           id="event-favorite-1" 
@@ -106,37 +175,40 @@ const createEventEditTemplate = (event) => {
           name="event-favorite"
           ${isCheckedFavouriteButton}
         >
-        <label class="event__favorite-btn" for="event-favorite-1">
+        <label class="event__favorite-btn ${creatingPoint ? `visually-hidden` : ``}" for="event-favorite-1">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
             <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
           </svg>
         </label>
 
+        ${creatingPoint ? `` : `
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
-        </button>
+        </button>`}
       </header>
-            
-      <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-          ${offerMarkup.outerHTML}
-        </section>
 
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">
-          ${descriptionMarkup}
-          </p>
-
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${photoMarkup}
+      ${offers.length > 0 || description.length > 0 ?
+      `<section class="event__details">
+          ${offers.length > 0 ?
+      `<section class="event__section  event__section--offers">
+            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+            <div class="event__available-offers">
+            ${offerMarkup}
             </div>
-          </div>
-        </section>
-      </section>
+          </section>` : ``}
+          ${description.length > 0 ?
+      `<section class="event__section  event__section--destination">
+            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+            <p class="event__destination-description">${description}</p>
+            ${photos.length > 0 ?
+      `<div class="event__photos-container">
+              <div class="event__photos-tape">
+              ${photoMarkup}
+              </div>
+            </div>` : ``}
+          </section>` : ``}
+        </section>` : ``}
     </form>`
   );
 };
@@ -145,9 +217,20 @@ export default class EventEdit extends AbstractSmartComponent {
   constructor(event) {
     super();
     this._event = event;
-    this._typeItem = event.typeItem;
-    this._flatpickr = null;
+    this._type = event.type;
+    this._city = event.city;
+    this._price = event.price;
+    this._description = event.description;
+    this._offers = event.offers;
+    this._photos = event.photos;
+
+    this._element = null;
+    this._flatpickrStartDate = null;
+    this._flatpickrEndDate = null;
+
+    this._favoriteClickHandler = null;
     this._submitHandler = null;
+    this._deleteButtonClickHandler = null;
     this._clickHandler = null;
 
     this._applyFlatpickr();
@@ -155,20 +238,41 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event);
+    return createEventEditTemplate(this._event, {
+      type: this._type,
+      city: this._city,
+      description: this._description,
+      offers: this._offers,
+      photos: this._photos,
+    });
   }
 
   reset() {
     const event = this._event;
 
-    this._typeItem = event.typeItem;
+    this._type = event.type;
     this._city = event.city;
 
     this.rerender();
   }
 
+  removeElement() {
+    if (this._flatpickrStartDate || this._flatpickrEndDate) {
+      this._flatpickrStartDate.destroy();
+      this._flatpickrEndDate.destroy();
+      this._flatpickrStartDate = null;
+      this._flatpickrEndDate = null;
+      this._clickHandler = null;
+    }
+
+    super.removeElement();
+  }
+
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
+    this.setFavoriteButtonClickHandler(this._favoriteClickHandler);
+    this.setClickHandler(this._clickHandler);
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this._subscribeOnEvents();
   }
 
@@ -177,20 +281,45 @@ export default class EventEdit extends AbstractSmartComponent {
     this._applyFlatpickr();
   }
 
+  getData() {
+    const form = this.getElement();
+    const formData = new FormData(form);
+    const newEvent = {
+      city: formData.get(`event-destination`),
+      start: moment(formData.get(`event-start-time`), `DD/MM/YY HH:mm`).valueOf(),
+      end: moment(formData.get(`event-end-time`), `DD/MM/YY HH:mm`).valueOf(),
+      price: formData.get(`event-price`),
+      offers: formData.getAll(`event-offer`),
+    };
+    return Object.assign({}, this._event, newEvent);
+  }
+
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
 
     this._submitHandler = handler;
   }
 
+  setDeleteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+
+    this._deleteButtonClickHandler = handler;
+  }
+
   setFavoriteButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-checkbox`)
       .addEventListener(`click`, handler);
+
+    this._favoriteClickHandler = handler;
   }
 
-  setRollupButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, handler);
+  setClickHandler(handler) {
+    const button = this.getElement().querySelector(`.event__rollup-btn`);
+    if (button) {
+      button.addEventListener(`click`, handler);
+      this._clickHandler = handler;
+    }
   }
 
   _subscribeOnEvents() {
@@ -198,11 +327,10 @@ export default class EventEdit extends AbstractSmartComponent {
 
     element.querySelector(`.event__type-list`)
     .addEventListener(`change`, (evt) => {
-      const icon = element.querySelector(`.event__type-icon`);
-      this._typeItem = EVENT_TYPES.get(evt.target.value);
-      icon.src = `img/icons/${evt.target.value}.png`;
+      const targetValue = evt.target.value;
+      this._type = EVENT_TYPES.get(targetValue);
 
-      this._event.typeItem = this._typeItem;
+      this._event.type = this._type;
       this.rerender();
     });
   }

@@ -1,10 +1,24 @@
 import EventItemComponent from "../components/event-item.js";
 import EventEditComponent from "../components/event-edit.js";
-import {render, replace, RenderPosition} from "../utils/render.js";
+import {render, replace, remove, RenderPosition} from "../utils/render.js";
 
-const Mode = {
+export const Mode = {
+  ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
+};
+
+export const EmptyEvent = {
+  id: String(Date.now() + Math.random()),
+  city: ``,
+  type: `bus`,
+  start: new Date(),
+  end: new Date(),
+  description: ``,
+  offers: [],
+  photos: [],
+  price: 0,
+  isFavorite: false
 };
 
 export default class PointController {
@@ -20,19 +34,20 @@ export default class PointController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(event, index) {
+  render(event, mode) {
     const oldEventItemComponent = this._eventItemComponent;
     const oldEventEditComponent = this._eventEditComponent;
+    this._mode = mode;
 
-    this._eventItemComponent = new EventItemComponent(event, index);
+    this._eventItemComponent = new EventItemComponent(event);
     this._eventEditComponent = new EventEditComponent(event);
 
-    this._eventItemComponent.setRollupButtonClickHandler(() => {
+    this._eventItemComponent.setClickHandler(() => {
       this._replaceEventToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._eventEditComponent.setRollupButtonClickHandler(() => {
+    this._eventEditComponent.setClickHandler(() => {
       this._replaceEditToEvent();
     });
 
@@ -44,14 +59,30 @@ export default class PointController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      this. _replaceEditToEvent();
+      const data = this._eventEditComponent.getData();
+      this._replaceEditToEvent();
+      this._onDataChange(this, event, data);
     });
+    this._eventEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, event, null));
 
-    if (oldEventEditComponent && oldEventItemComponent) {
-      replace(this._eventItemComponent, oldEventItemComponent);
-      replace(this._eventEditComponent, oldEventEditComponent);
-    } else {
-      render(this._container, this._eventItemComponent, RenderPosition.BEFOREEND);
+    switch (mode) {
+      case Mode.DEFAULT:
+        if (oldEventEditComponent && oldEventItemComponent) {
+          replace(this._eventItemComponent, oldEventItemComponent);
+          replace(this._eventEditComponent, oldEventEditComponent);
+        } else {
+          render(this._container, this._eventItemComponent, RenderPosition.BEFOREEND);
+        }
+        break;
+      case Mode.ADDING:
+        if (oldEventEditComponent && oldEventItemComponent) {
+          remove(oldEventItemComponent);
+          remove(oldEventEditComponent);
+        }
+        this._onViewChange();
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        render(this._container, this._eventEditComponent, RenderPosition.AFTERBEGIN);
+        break;
     }
   }
 
@@ -59,6 +90,12 @@ export default class PointController {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
     }
+  }
+
+  destroy() {
+    remove(this._eventEditComponent);
+    remove(this._eventItemComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _replaceEventToEdit() {
@@ -69,7 +106,11 @@ export default class PointController {
 
   _replaceEditToEvent() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    replace(this._eventItemComponent, this._eventEditComponent);
+
+    if (document.contains(this._eventEditComponent.getElement())) {
+      replace(this._eventItemComponent, this._eventEditComponent);
+    }
+
     this._mode = Mode.DEFAULT;
   }
 
@@ -77,6 +118,9 @@ export default class PointController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
+      if (this._mode === Mode.ADDING) {
+        this._onDataChange(this, EmptyEvent, null);
+      }
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
