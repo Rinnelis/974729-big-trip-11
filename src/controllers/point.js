@@ -1,11 +1,41 @@
 import EventItemComponent from "../components/event-item.js";
 import EventEditComponent from "../components/event-edit.js";
 import {render, replace, remove, RenderPosition} from "../utils/render.js";
+import moment from "moment";
+import Point from "../models/point.js";
+import DestinationsList from '../models/destinations.js';
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
+};
+
+const parseFormData = (formData) => {
+  const destination = DestinationsList.getList().find((city) => city.name === formData.get(`event-destination`));
+
+  return new Point({
+    'id': `0`,
+    'type': formData.get(`event-current-type`),
+    'destination': {
+      'description': destination.description,
+      'name': destination.name,
+      'pictures': destination.pictures
+    },
+    'date_from': new Date(moment(formData.get(`event-start-time`), `DD/MM/YYYY HH:mm`).valueOf()).toISOString(),
+    'date_to': new Date(moment(formData.get(`event-end-time`), `DD/MM/YYYY HH:mm`).valueOf()).toISOString(),
+    'base_price': Number(formData.get(`event-price`)),
+    'offers': Array.from(document.querySelectorAll(`.event__offer-selector`)).map((offer) => {
+      return {
+        'title': offer.querySelector(`.event__offer-title`).textContent,
+        'price': Number(offer.querySelector(`.event__offer-price`).textContent),
+        'checked': offer.querySelector(`.event__offer-checkbox`).checked,
+      };
+    }),
+    'is_favorite': Boolean(formData.get(`event-favorite`)),
+  });
 };
 
 export const EmptyEvent = {
@@ -16,7 +46,7 @@ export const EmptyEvent = {
   end: new Date(),
   description: ``,
   offers: [],
-  photos: [],
+  pictures: [],
   price: 0,
   isFavorite: false
 };
@@ -52,18 +82,33 @@ export default class PointController {
     });
 
     this._eventEditComponent.setFavoriteButtonClickHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite,
-      }));
+      const newEvent = Point.clone(event);
+      newEvent.isFavorite = !newEvent.isFavorite;
+
+      this._onDataChange(this, event, newEvent);
     });
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._eventEditComponent.getData();
+      const formData = this._eventEditComponent.getData();
+      const data = parseFormData(formData);
+      this._eventEditComponent.disable();
+      this._eventEditComponent.setData({
+        saveButtonText: `Saving...`,
+      });
+
       this._replaceEditToEvent();
       this._onDataChange(this, event, data);
+      this._eventEditComponent.activate();
     });
-    this._eventEditComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, event, null));
+
+    this._eventEditComponent.setDeleteButtonClickHandler(() => {
+      this._eventEditComponent.setData({
+        deleteButtonText: `Deleting...`,
+      });
+
+      this._onDataChange(this, event, null);
+    });
 
     switch (mode) {
       case Mode.DEFAULT:
@@ -98,6 +143,21 @@ export default class PointController {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
+  shake() {
+    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventItemComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._eventEditComponent.getElement().style.animation = ``;
+      this._eventItemComponent.getElement().style.animation = ``;
+
+      this._eventEditComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   _replaceEventToEdit() {
     this._onViewChange();
     replace(this._eventEditComponent, this._eventItemComponent);
@@ -106,6 +166,7 @@ export default class PointController {
 
   _replaceEditToEvent() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+    this._eventEditComponent.reset();
 
     if (document.contains(this._eventEditComponent.getElement())) {
       replace(this._eventItemComponent, this._eventEditComponent);

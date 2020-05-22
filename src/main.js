@@ -1,3 +1,4 @@
+import API from "./api.js";
 import MainTripInfoComponent from "./components/main-trip-info.js";
 import SiteMenuComponent, {MenuItem} from "./components/site-menu.js";
 import FilterController from "./controllers/filter.js";
@@ -5,26 +6,26 @@ import StatisticsComponent from "./components/statistics.js";
 import BoardComponent from "./components/board.js";
 import TripController from "./controllers/trip.js";
 import PointsModel from "./models/points.js";
-import {generateEvents} from "./mock/event.js";
 import {render, RenderPosition} from "./utils/render.js";
 
-export const EVENT_COUNT = 15;
+const AUTHORIZATION = `Basic lsddsbgsbdHJTFvjV=`;
+const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
+const api = new API(END_POINT, AUTHORIZATION);
 const siteHeaderElement = document.querySelector(`.page-header__container`);
-const routeAndPriceElement = siteHeaderElement.querySelector(`.trip-main`);
+const tripHeader = siteHeaderElement.querySelector(`.trip-main`);
 const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
 const mainContentElement = document.querySelector(`.page-main .page-body__container`);
 const siteMenuComponent = new SiteMenuComponent();
-const events = generateEvents(EVENT_COUNT);
 const pointsModel = new PointsModel();
+const mainTripInfoComponent = new MainTripInfoComponent(pointsModel);
 const filterController = new FilterController(tripControlsElement, pointsModel);
 const boardComponent = new BoardComponent();
-const tripController = new TripController(boardComponent, pointsModel);
+const tripController = new TripController(boardComponent, pointsModel, api);
 
-render(routeAndPriceElement, new MainTripInfoComponent(events), RenderPosition.AFTERBEGIN);
+render(tripHeader, mainTripInfoComponent, RenderPosition.AFTERBEGIN);
 render(tripControlsElement, siteMenuComponent, RenderPosition.BEFOREEND);
 
-pointsModel.setPoints(events);
 filterController.render();
 
 const statisticsComponent = new StatisticsComponent(pointsModel);
@@ -37,7 +38,12 @@ newEventButton.addEventListener(`click`, () => {
 });
 
 render(mainContentElement, boardComponent, RenderPosition.BEFOREEND);
-tripController.render();
+
+api.getPoints()
+  .then((points) => {
+    pointsModel.setPoints(points);
+    tripController.render();
+  });
 
 siteMenuComponent.setOnChange((menuItem) => {
   switch (menuItem) {

@@ -1,7 +1,6 @@
 import AbstractComponent from "./abstract-component.js";
-import {getDurationTime} from "../utils/common.js";
-import {Direction} from "../mock/event.js";
-import {ucFirstLetter} from "../utils/common.js";
+import {getDurationTime, ucFirstLetter} from "../utils/common.js";
+import {Direction} from "../const.js";
 import moment from "moment";
 
 const createOffersTemplate = (offers) => {

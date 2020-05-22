@@ -30,7 +30,7 @@ const getTripCities = (events) => {
   return eventsLength;
 };
 
-const getTripInterval = (events) => {
+const getTripDuration = (events) => {
   if (events.length === 0) {
     return ``;
   } else if (events.length === 1) {
@@ -42,14 +42,14 @@ const getTripInterval = (events) => {
 
 const createTripInfoTemplate = (events) => {
   const tripCitiesMarkup = getTripCities(events);
-  const tripIntervalMarkup = getTripInterval(events);
+  const tripDurationMarkup = getTripDuration(events);
   const tripPriceMarkup = new MainTripPriceComponent(events).getElement();
 
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
         <h1 class="trip-info__title">${tripCitiesMarkup}</h1>
-        <p class="trip-info__dates">${tripIntervalMarkup}</p>
+        <p class="trip-info__dates">${tripDurationMarkup}</p>
       </div>
       ${tripPriceMarkup.outerHTML}
     </section>`
@@ -60,9 +60,43 @@ export default class MainTripInfo extends AbstractComponent {
   constructor(events) {
     super();
     this._events = events;
+    this._citiesMarkup = null;
+    this._durationMarkup = null;
+    this._priceMarkup = null;
+    this._render();
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._events);
+  }
+
+  rerender(events) {
+    this._events = events;
+    super.rerender();
+    this._render();
+  }
+
+  _render(events) {
+    this._reset();
+    this._citiesMarkup = getTripCities(events);
+    this._durationMarkup = getTripDuration(events);
+    this._priceMarkup = new MainTripPriceComponent(events).getElement();
+  }
+
+  _reset() {
+    if (this._citiesMarkup) {
+      this._citiesMarkup.destroy();
+      this._citiesMarkup = null;
+    }
+
+    if (this._durationMarkup) {
+      this._durationMarkup.destroy();
+      this._durationMarkup = null;
+    }
+
+    if (this._priceMarkup) {
+      this._priceMarkup.destroy();
+      this._priceMarkup = null;
+    }
   }
 }
