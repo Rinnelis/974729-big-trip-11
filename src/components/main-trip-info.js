@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from "./abstract-smart-component.js";
 import MainTripPriceComponent from "./main-trip-price.js";
 
 const PointsAmount = {
@@ -56,14 +56,14 @@ const createTripInfoTemplate = (events) => {
   );
 };
 
-export default class MainTripInfo extends AbstractComponent {
+export default class MainTripInfo extends AbstractSmartComponent {
   constructor(events) {
     super();
     this._events = events;
     this._citiesMarkup = null;
     this._durationMarkup = null;
     this._priceMarkup = null;
-    this._render();
+    this._render(this._events);
   }
 
   getTemplate() {
@@ -73,14 +73,15 @@ export default class MainTripInfo extends AbstractComponent {
   rerender(events) {
     this._events = events;
     super.rerender();
-    this._render();
+    this._render(this._events);
   }
 
   _render(events) {
+    this._events = events;
     this._reset();
-    this._citiesMarkup = getTripCities(events);
-    this._durationMarkup = getTripDuration(events);
-    this._priceMarkup = new MainTripPriceComponent(events).getElement();
+    this._citiesMarkup = getTripCities(this._events);
+    this._durationMarkup = getTripDuration(this._events);
+    this._priceMarkup = new MainTripPriceComponent(this._events).getElement();
   }
 
   _reset() {

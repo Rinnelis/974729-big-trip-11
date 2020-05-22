@@ -272,9 +272,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._type = event.type;
     this._city = event.city;
     this._price = event.price;
-    this._description = event.description;
     this._offers = event.offers;
-    this._pictures = event.pictures;
 
     this.rerender();
   }

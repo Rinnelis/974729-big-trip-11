@@ -97,7 +97,6 @@ export default class PointController {
         saveButtonText: `Saving...`,
       });
 
-      this._replaceEditToEvent();
       this._onDataChange(this, event, data);
       this._eventEditComponent.activate();
     });
