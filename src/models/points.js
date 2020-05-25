@@ -29,6 +29,10 @@ export default class Points {
     this._callHandlers(this._filterChangeHandlers);
   }
 
+  getActiveFilterType() {
+    return this._activeFilterType;
+  }
+
   removePoint(id) {
     const index = this._points.findIndex((it) => it.id === id);
 

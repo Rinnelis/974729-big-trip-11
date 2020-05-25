@@ -64,9 +64,10 @@ const getGroupPoints = (pointsList) => Object.entries(pointsList.reduce((acc, po
 }, {})).sort();
 
 export default class TripController {
-  constructor(container, pointsModel, api) {
+  constructor(container, filterController, pointsModel, api) {
     this._api = api;
     this._container = container.getElement();
+    this._filterController = filterController;
     this._pointsModel = pointsModel;
     this._showedEventControllers = [];
     this._eventsComponent = new EventsComponent();
@@ -85,6 +86,7 @@ export default class TripController {
 
   hide() {
     this._eventsComponent.hide();
+    this._updatePoints();
   }
 
   show() {
@@ -92,6 +94,7 @@ export default class TripController {
     const sort = document.querySelector(`#sort-event`);
     sort.checked = true;
     this._eventsComponent.show();
+    this._updatePoints();
   }
 
   render() {
@@ -123,13 +126,11 @@ export default class TripController {
 
     const sortedEvents = getGroupPoints(getSortedEvents(this._pointsModel.getPointsAll(), SortType.EVENT));
     this._removePoints();
-    const sort = document.querySelector(`#sort-event`);
-    sort.checked = true;
+    this._sortComponent.setDefaultSort(SortType.EVENT);
     this._showedEventControllers = renderEvents(eventListElement, sortedEvents, this._onDataChange, this._onViewChange);
 
     const filteredEvents = getGroupPoints(getSortedEvents(this._pointsModel.getPoints(), FILTER_TYPE.EVERYTHING));
-    const filter = document.querySelector(`#filter-everything`);
-    filter.checked = true;
+    this._filterController.setDefaultFilter();
     this._showedEventControllers = renderEvents(eventListElement, filteredEvents, this._onDataChange, this._onViewChange);
 
     this._creatingPoint = new PointController(eventListElement, this._onDataChange, this._onViewChange);
@@ -149,6 +150,11 @@ export default class TripController {
 
     this._removePoints();
     this._showedEventControllers = renderEvents(eventListElement, getGroupPoints(this._pointsModel.getPoints()), this._onDataChange, this._onViewChange);
+
+    if (this._pointsModel.getPoints().length === 0) {
+      this._filterController.disableFilter(this._pointsModel.getActiveFilterType());
+    }
+
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
@@ -166,6 +172,7 @@ export default class TripController {
           this._pointsModel.addPoint(pointModel);
           pointController.render(newData, PointControllerMode.DEFAULT);
           this._showedEventControllers = [].concat(pointController, this._showedEventControllers);
+          this._filterController.setDefaultFilter();
           this._updatePoints();
         })
         .catch(() => {
