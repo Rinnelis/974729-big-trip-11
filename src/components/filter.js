@@ -46,4 +46,12 @@ export default class Filter extends AbstractComponent {
       handler(filterName);
     });
   }
+
+  switchStyle(filter) {
+    const element = this.getElement().querySelector(`#filter-${filter}`);
+
+    if (element) {
+      element.setAttribute(`disabled`, `disabled`);
+    }
+  }
 }

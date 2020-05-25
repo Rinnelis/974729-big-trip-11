@@ -20,12 +20,12 @@ const createOffersTemplate = (offers) => {
       `<div class="event__offer-selector">
         <input 
           class="event__offer-checkbox  visually-hidden" 
-          id="event-offer-${offer.title.toLowerCase().split(`-`)}-1" 
+          id="event-offer-${offer.title}-1" 
           type="checkbox" 
           value="event-offer"
-          name="event-offer-${offer.title.split(`-`)}" 
+          name="event-offer-${offer.title}"
         >
-        <label class="event__offer-label" for="event-offer-${offer.title.toLowerCase().split(`-`)}-1">
+        <label class="event__offer-label" for="event-offer-${offer.title}-1">
           <span class="event__offer-title">${offer.title}</span>
           &plus;
           &euro;&nbsp;
@@ -44,7 +44,7 @@ const createCitiesTemplate = (cities, city) => {
 
 const createPicturesTemplate = (pictures) => {
   return pictures.map((picture) => {
-    return (`<img class="event__photo" src="${picture.src}" alt="${picture.description}">`);
+    return (`<img class="event__photo" src="${picture.src}" alt="${picture.description.toLowerCase().split(`-`)}">`);
   }).join(``);
 };
 
@@ -65,8 +65,9 @@ const createEventTypeMarkup = (type, chosenType) => {
   );
 };
 
-const createEventEditTemplate = (event) => {
-  const {city, type, description, pictures, offers, price, start, end, isFavorite, externalData} = event;
+const createEventEditTemplate = (event, external) => {
+  const {city, type, description, pictures, offers, price, start, end, isFavorite} = event;
+  const {externalData} = external;
 
   let creatingPoint = false;
 
@@ -135,7 +136,8 @@ const createEventEditTemplate = (event) => {
             name="event-destination" 
             value="${city}" 
             list="destination-list-1"
-            
+            required 
+            autocomplete="off"
           >
           <datalist id="destination-list-1">
             ${cityMarkup}
@@ -358,12 +360,13 @@ export default class EventEdit extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
+    const eventDestination = element.querySelector(`#event-destination-1`);
 
     element.querySelector(`.event__type-list`)
     .addEventListener(`change`, (evt) => {
       const targetValue = evt.target.value;
       this._type = EVENT_TYPES.get(targetValue);
-      this._offers = OffersList.getList().find((offer) => offer.type === this._type).offers;
+      this._offers = OffersList.getList().find((offer) => offer.type === evt.target.value).offers;
 
       this._event.type = this._type;
       this._event.offers = this._offers;
@@ -373,14 +376,32 @@ export default class EventEdit extends AbstractSmartComponent {
     element.querySelector(`.event__input--destination`)
     .addEventListener(`change`, (evt) => {
       this._city = evt.target.value;
-      this._pictures = DestinationsList.get().find((destination) => destination.name === this._city).pictures;
-      this._description = DestinationsList.get().find((destination) => destination.name === this._city).description;
+      this._pictures = DestinationsList.getList().find((destination) => destination.name === this._city).pictures;
+      this._description = DestinationsList.getList().find((destination) => destination.name === this._city).description;
 
       this._event.city = this._city;
       this._event.pictures = this._pictures;
       this._event.description = this._description;
       this.rerender();
     });
+
+    eventDestination.addEventListener(`change`, (evt) => {
+      evt.preventDefault();
+      const index = DestinationsList.getList().findIndex((destination) => destination.name === this._city);
+      if (index === -1) {
+        eventDestination.setCustomValidity(`Выберете город из списка`);
+        return;
+      }
+      this._eventDestination = DestinationsList.getList()[index];
+      this.rerender();
+    });
+
+    const offersList = element.querySelectorAll(`.event__offer-checkbox`);
+    for (const offer of offersList) {
+      offer.addEventListener(`change`, () => {
+        offer.toggleAttribute(`checked`);
+      });
+    }
   }
 
   _applyFlatpickr() {

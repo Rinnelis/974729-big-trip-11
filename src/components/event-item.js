@@ -3,8 +3,10 @@ import {getDurationTime, ucFirstLetter} from "../utils/common.js";
 import {Direction} from "../const.js";
 import moment from "moment";
 
+const MAX_SHOWING_OFFERS = 3;
+
 const createOffersTemplate = (offers) => {
-  return offers.map((offer) => {
+  return offers.slice(0, MAX_SHOWING_OFFERS).map((offer) => {
     return (
       `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>

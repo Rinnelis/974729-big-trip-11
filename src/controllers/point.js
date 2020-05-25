@@ -15,10 +15,11 @@ export const Mode = {
 
 const parseFormData = (formData) => {
   const destination = DestinationsList.getList().find((city) => city.name === formData.get(`event-destination`));
+  const checkedOffers = [...document.querySelectorAll(`.event__offer-checkbox:checked + label[for^="event"]`)];
 
   return new Point({
     'id': `0`,
-    'type': formData.get(`event-current-type`),
+    'type': formData.get(`event-type`),
     'destination': {
       'description': destination.description,
       'name': destination.name,
@@ -27,13 +28,10 @@ const parseFormData = (formData) => {
     'date_from': new Date(moment(formData.get(`event-start-time`), `DD/MM/YYYY HH:mm`).valueOf()).toISOString(),
     'date_to': new Date(moment(formData.get(`event-end-time`), `DD/MM/YYYY HH:mm`).valueOf()).toISOString(),
     'base_price': Number(formData.get(`event-price`)),
-    'offers': Array.from(document.querySelectorAll(`.event__offer-selector`)).map((offer) => {
-      return {
-        'title': offer.querySelector(`.event__offer-title`).textContent,
-        'price': Number(offer.querySelector(`.event__offer-price`).textContent),
-        'checked': offer.querySelector(`.event__offer-checkbox`).checked,
-      };
-    }),
+    'offers': checkedOffers.map((offer) => ({
+      'title': offer.querySelector(`.event__offer-title`).textContent,
+      'price': Number(offer.querySelector(`.event__offer-price`).textContent)
+    })),
     'is_favorite': Boolean(formData.get(`event-favorite`)),
   });
 };
@@ -88,8 +86,7 @@ export default class PointController {
       this._onDataChange(this, event, newEvent);
     });
 
-    this._eventEditComponent.setSubmitHandler((evt) => {
-      evt.preventDefault();
+    this._eventEditComponent.setSubmitHandler(() => {
       const formData = this._eventEditComponent.getData();
       const data = parseFormData(formData);
       this._eventEditComponent.disable();
@@ -165,7 +162,6 @@ export default class PointController {
 
   _replaceEditToEvent() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._eventEditComponent.reset();
 
     if (document.contains(this._eventEditComponent.getElement())) {
       replace(this._eventItemComponent, this._eventEditComponent);

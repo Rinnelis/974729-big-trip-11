@@ -1,5 +1,4 @@
-import AbstractSmartComponent from "./abstract-smart-component.js";
-import MainTripPriceComponent from "./main-trip-price.js";
+import AbstractComponent from "./abstract-component.js";
 
 const PointsAmount = {
   ZERO: 0,
@@ -40,10 +39,22 @@ const getTripDuration = (events) => {
   }
 };
 
+const getTripCost = (events) => {
+  return events.reduce((acc, event) => acc + event.price, 0);
+};
+
 const createTripInfoTemplate = (events) => {
   const tripCitiesMarkup = getTripCities(events);
   const tripDurationMarkup = getTripDuration(events);
-  const tripPriceMarkup = new MainTripPriceComponent(events).getElement();
+  const tripCost = getTripCost(events);
+
+  // let tripCost = `0`;
+
+  // if (events.length > 0) {
+  //   const offerCosts = [];
+  //   events.map((event) => event.offers.forEach((offer) => offerCosts.push(offer.price)));
+  //   tripCost = events.map((event) => event.price).reduce((acc, price) => acc + price, 0) + offerCosts.reduce((acc, offerCost) => acc + offerCost, 0);
+  // }
 
   return (
     `<section class="trip-main__trip-info  trip-info">
@@ -51,53 +62,21 @@ const createTripInfoTemplate = (events) => {
         <h1 class="trip-info__title">${tripCitiesMarkup}</h1>
         <p class="trip-info__dates">${tripDurationMarkup}</p>
       </div>
-      ${tripPriceMarkup.outerHTML}
+      <p class="trip-info__cost">
+        Total: &euro;&nbsp;
+        <span class="trip-info__cost-value">${tripCost}</span>
+      </p>
     </section>`
   );
 };
 
-export default class MainTripInfo extends AbstractSmartComponent {
-  constructor(events) {
+export default class MainTripInfo extends AbstractComponent {
+  constructor(pointsModel) {
     super();
-    this._events = events;
-    this._citiesMarkup = null;
-    this._durationMarkup = null;
-    this._priceMarkup = null;
-    this._render(this._events);
+    this._pointsModel = pointsModel;
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this._events);
-  }
-
-  rerender(events) {
-    this._events = events;
-    super.rerender();
-    this._render(this._events);
-  }
-
-  _render(events) {
-    this._events = events;
-    this._reset();
-    this._citiesMarkup = getTripCities(this._events);
-    this._durationMarkup = getTripDuration(this._events);
-    this._priceMarkup = new MainTripPriceComponent(this._events).getElement();
-  }
-
-  _reset() {
-    if (this._citiesMarkup) {
-      this._citiesMarkup.destroy();
-      this._citiesMarkup = null;
-    }
-
-    if (this._durationMarkup) {
-      this._durationMarkup.destroy();
-      this._durationMarkup = null;
-    }
-
-    if (this._priceMarkup) {
-      this._priceMarkup.destroy();
-      this._priceMarkup = null;
-    }
+    return createTripInfoTemplate(this._pointsModel.getPointsAll());
   }
 }

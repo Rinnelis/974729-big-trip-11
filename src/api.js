@@ -33,7 +33,7 @@ export default class API {
 
   getDestinations() {
     return this._load({
-      url: `${this._url}destinations`
+      url: `destinations`
     })
     .then((response) => response.json())
     .then(DestinationsList.setList);
@@ -41,7 +41,7 @@ export default class API {
 
   getOffers() {
     return this._load({
-      url: `${this._url}offers`
+      url: `offers`
     })
     .then((response) => response.json())
     .then(OffersList.setList);
@@ -49,7 +49,7 @@ export default class API {
 
   createPoint(point) {
     return this._load({
-      url: `${this._url}points`,
+      url: `points`,
       method: Method.POST,
       body: JSON.stringify(point.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
@@ -71,7 +71,7 @@ export default class API {
 
   deletePoint(id) {
     return this._load({
-      url: `${this._url}points/${id}`,
+      url: `points/${id}`,
       method: Method.DELETE
     });
   }

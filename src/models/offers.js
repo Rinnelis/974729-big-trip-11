@@ -1,13 +1,11 @@
-export default class OffersList {
-  constructor() {
-    this._offers = null;
-  }
+let _offers = null;
 
+export default class OffersList {
   static setList(offers) {
-    OffersList._offers = offers;
+    _offers = offers;
   }
 
   static getList() {
-    return OffersList._offers;
+    return _offers;
   }
 }

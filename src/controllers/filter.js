@@ -3,6 +3,8 @@ import {FILTER_TYPE} from "../const.js";
 import {render, replace, RenderPosition} from "../utils/render.js";
 import {getEventsByFilter} from "../utils/filter.js";
 
+// const disabledStyle = `pointer-events: none; cursor: default;`;
+
 export default class FilterController {
   constructor(container, pointsModel) {
     this._container = container;
@@ -38,6 +40,10 @@ export default class FilterController {
     } else {
       render(container, this._filterComponent, RenderPosition.BEFOREEND);
     }
+  }
+
+  disableFilter(filter) {
+    this._filterComponent.switchStyle(filter);
   }
 
   _onFilterChange(filterType) {

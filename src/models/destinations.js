@@ -1,13 +1,11 @@
-export default class DestinationsList {
-  constructor() {
-    this._destinations = null;
-  }
+let _destinations = null;
 
+export default class DestinationsList {
   static setList(destinations) {
-    DestinationsList._destinations = destinations;
+    _destinations = destinations;
   }
 
   static getList() {
-    return DestinationsList._destinations;
+    return _destinations;
   }
 }
