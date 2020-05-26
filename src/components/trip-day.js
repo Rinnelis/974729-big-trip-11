@@ -30,7 +30,7 @@ const createTripDaysTemplate = (start, index) => {
 export default class TripDays extends AbstractComponent {
   constructor(start, index) {
     super();
-    this._start = +start;
+    this._start = start;
     this._index = index;
   }
 

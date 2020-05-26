@@ -42,10 +42,10 @@ const getSortedEvents = (events, sortType) => {
       sortedEvents = eventsList;
       break;
     case SortType.TIME:
-      sortedEvents = eventsList.sort((a, b) => (b.end - b.start) - (a.end - a.start));
+      sortedEvents = eventsList.sort((current, next) => (next.end - next.start) - (current.end - current.start));
       break;
     case SortType.PRICE:
-      sortedEvents = eventsList.sort((a, b) => b.price - a.price);
+      sortedEvents = eventsList.sort((current, next) => next.price - current.price);
       break;
   }
 
@@ -54,14 +54,14 @@ const getSortedEvents = (events, sortType) => {
 
 const getGroupPoints = (pointsList) => Object.entries(pointsList.reduce((acc, point) => {
   for (const start in acc) {
-    if (moment(+start).isSame(moment(+point.start), `day`)) {
+    if (moment(start).isSame(point.start, `day`)) {
       acc[start].push(point);
       return acc;
     }
   }
   acc[point.start] = [point];
   return acc;
-}, {})).sort();
+}, {})).sort((current, next) => current.start - next.start);
 
 export default class TripController {
   constructor(container, filterController, pointsModel, api) {
@@ -214,8 +214,16 @@ export default class TripController {
     const eventListElement = this._eventsComponent.getElement();
     const sortedEvents = getSortedEvents(this._pointsModel.getPoints(), sortType);
 
-    const groupPoints = getGroupPoints(sortedEvents);
-    this._showedEventControllers = renderEvents(eventListElement, groupPoints, this._onDataChange, this._onViewChange);
+    if (sortType === SortType.EVENT) {
+      const groupPoints = getGroupPoints(sortedEvents);
+      this._showedEventControllers = renderEvents(eventListElement, groupPoints, this._onDataChange, this._onViewChange);
+    } else {
+      const tripItemList = new TripItemsList();
+      const pointController = new PointController(tripItemList.getElement(), this._onDataChange, this._onViewChange);
+      for (const event of sortedEvents) {
+        this._showedEventControllers = pointController.render(event, PointControllerMode.DEFAULT);
+      }
+    }
   }
 
   _onFilterChange() {
