@@ -54,7 +54,7 @@ const getSortedEvents = (events, sortType) => {
 
 const getGroupPoints = (pointsList) => Object.entries(pointsList.reduce((acc, point) => {
   for (const start in acc) {
-    if (moment(start).isSame(point.start, `day`)) {
+    if (moment(start).isSame(moment(point.start), `day`)) {
       acc[start].push(point);
       return acc;
     }
@@ -220,9 +220,7 @@ export default class TripController {
     } else {
       const tripItemList = new TripItemsList();
       const pointController = new PointController(tripItemList.getElement(), this._onDataChange, this._onViewChange);
-      for (const event of sortedEvents) {
-        this._showedEventControllers = pointController.render(event, PointControllerMode.DEFAULT);
-      }
+      this._showedEventControllers.push(pointController);
     }
   }
 
