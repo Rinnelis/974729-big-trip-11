@@ -17,10 +17,10 @@ const getTripCities = (events) => {
       eventsLength = events[0].city;
       break;
     case PointsAmount.TWO:
-      eventsLength = events[0].city + ` &mdash; ` + events[1].city;
+      eventsLength = events[0].city + ` &mdash; ` + events[events.length - 1].city;
       break;
     case PointsAmount.THREE:
-      eventsLength = events[0].city + ` &mdash; ` + events[1].city + ` &mdash; ` + events[2].city;
+      eventsLength = events[0].city + ` &mdash; ` + events[1].city + ` &mdash; ` + events[events.length - 1].city;
       break;
     default:
       eventsLength = events[0].city + ` &mdash;` + ` &hellip; ` + `&mdash; ` + events[events.length - 1].city;
@@ -39,22 +39,22 @@ const getTripDuration = (events) => {
   }
 };
 
-const getTripCost = (events) => {
-  return events.reduce((acc, event) => acc + event.price, 0);
-};
+// const getTripCost = (events) => {
+//   return events.reduce((acc, event) => acc + event.price, 0);
+// };
 
 const createTripInfoTemplate = (events) => {
   const tripCitiesMarkup = getTripCities(events);
   const tripDurationMarkup = getTripDuration(events);
-  const tripCost = getTripCost(events);
+  // const tripCost = getTripCost(events);
 
-  // let tripCost = `0`;
+  let tripCost = `0`;
 
-  // if (events.length > 0) {
-  //   const offerCosts = [];
-  //   events.map((event) => event.offers.forEach((offer) => offerCosts.push(offer.price)));
-  //   tripCost = events.map((event) => event.price).reduce((acc, price) => acc + price, 0) + offerCosts.reduce((acc, offerCost) => acc + offerCost, 0);
-  // }
+  if (events.length > 0) {
+    const offerCosts = [];
+    events.map((event) => event.offers.forEach((offer) => offerCosts.push(offer.price)));
+    tripCost = events.map((event) => event.price).reduce((acc, price) => acc + price, 0) + offerCosts.reduce((acc, offerCost) => acc + offerCost, 0);
+  }
 
   return (
     `<section class="trip-main__trip-info  trip-info">

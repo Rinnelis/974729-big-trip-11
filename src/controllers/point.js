@@ -76,7 +76,7 @@ export default class PointController {
     });
 
     this._eventEditComponent.setClickHandler(() => {
-      this._hideMoreInfo();
+      this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDowm);
     });
 
@@ -113,7 +113,6 @@ export default class PointController {
         if (oldEventEditComponent && oldEventItemComponent) {
           replace(this._eventItemComponent, oldEventItemComponent);
           replace(this._eventEditComponent, oldEventEditComponent);
-          this._hideMoreInfo();
         } else {
           render(this._container, this._eventItemComponent, RenderPosition.BEFOREEND);
         }
@@ -132,7 +131,7 @@ export default class PointController {
 
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
-      this._hideMoreInfo();
+      this._replaceEditToEvent();
     }
   }
 
@@ -174,12 +173,6 @@ export default class PointController {
     this._mode = Mode.DEFAULT;
   }
 
-  _hideMoreInfo() {
-    this._eventEditComponent.reset();
-    replace(this._eventItemComponent, this._eventEditComponent);
-    this._mode = Mode.DEFAULT;
-  }
-
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
@@ -187,7 +180,7 @@ export default class PointController {
       if (this._mode === Mode.ADDING) {
         this._onDataChange(this, EmptyEvent, null);
       }
-      this._hideMoreInfo();
+      this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }

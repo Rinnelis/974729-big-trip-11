@@ -54,7 +54,7 @@ const getSortedEvents = (events, sortType) => {
 
 const getGroupPoints = (pointsList) => Object.entries(pointsList.reduce((acc, point) => {
   for (const start in acc) {
-    if (moment(start).isSame(moment(point.start), `day`)) {
+    if (moment(new Date(start)).isSame(moment(new Date(point.start)), `day`)) {
       acc[start].push(point);
       return acc;
     }
@@ -218,9 +218,16 @@ export default class TripController {
       const groupPoints = getGroupPoints(sortedEvents);
       this._showedEventControllers = renderEvents(eventListElement, groupPoints, this._onDataChange, this._onViewChange);
     } else {
+      const tripDay = new TripDay();
+      render(eventListElement, tripDay, RenderPosition.BEFOREEND);
+
       const tripItemList = new TripItemsList();
-      const pointController = new PointController(tripItemList.getElement(), this._onDataChange, this._onViewChange);
-      this._showedEventControllers.push(pointController);
+      render(tripDay.getElement(), tripItemList, RenderPosition.BEFOREEND);
+      for (const event of sortedEvents) {
+        const pointController = new PointController(tripItemList.getElement(), this._onDataChange, this._onViewChange);
+        pointController.render(event, PointControllerMode.DEFAULT);
+        this._showedEventControllers.push(pointController);
+      }
     }
   }
 

@@ -6,7 +6,7 @@ import moment from "moment";
 const MAX_SHOWING_OFFERS = 3;
 
 const createOffersTemplate = (offers) => {
-  return offers.slice(0, MAX_SHOWING_OFFERS).map((offer) => {
+  return offers.map((offer) => {
     return (
       `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
@@ -14,7 +14,7 @@ const createOffersTemplate = (offers) => {
         &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
       </li>`
     );
-  }).join(``);
+  }).slice(0, MAX_SHOWING_OFFERS).join(``);
 };
 
 const createTypesTemplate = (type, city) => {

@@ -14,8 +14,9 @@ const DefaultData = {
   saveButtonText: `Save`,
 };
 
-const createOffersTemplate = (offers) => {
+const createOffersTemplate = (event, offers) => {
   return offers.map((offer) => {
+    const isChecked = !!event.offers.find((eventOffer) => eventOffer.title === offer.title);
     return (
       `<div class="event__offer-selector">
         <input 
@@ -24,6 +25,7 @@ const createOffersTemplate = (offers) => {
           type="checkbox" 
           value="event-offer"
           name="event-offer-${offer.title}"
+          ${isChecked ? `checked` : ``}
         >
         <label class="event__offer-label" for="event-offer-${offer.title}-1">
           <span class="event__offer-title">${offer.title}</span>
@@ -93,7 +95,8 @@ const createEventEditTemplate = (event, external) => {
     rightDirection = Direction.TO;
   }
 
-  const offerMarkup = createOffersTemplate(offers);
+  const offersList = OffersList.getList().find((offer) => offer.type === event.type).offers;
+  const offerMarkup = createOffersTemplate(event, offersList);
   const isCheckedFavouriteButton = isFavorite ? `checked` : ``;
 
   const deleteButtonText = externalData.deleteButtonText;
@@ -391,7 +394,7 @@ export default class EventEdit extends AbstractSmartComponent {
       evt.preventDefault();
       const index = DestinationsList.getList().findIndex((destination) => destination.name === this._city);
       if (index === -1) {
-        eventDestination.setCustomValidity(`Выберете город из списка`);
+        eventDestination.setCustomValidity(`Choose a city from the list`);
         return;
       }
       this._eventDestination = DestinationsList.getList()[index];
