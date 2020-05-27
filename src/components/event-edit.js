@@ -95,7 +95,7 @@ const createEventEditTemplate = (event, external) => {
     rightDirection = Direction.TO;
   }
 
-  const offersList = OffersList.getList().find((offer) => offer.type === event.type).offers;
+  const offersList = OffersList.getList().find((offer) => offer.type === event.type.toLowerCase()).offers;
   const offerMarkup = createOffersTemplate(event, offersList);
   const isCheckedFavouriteButton = isFavorite ? `checked` : ``;
 

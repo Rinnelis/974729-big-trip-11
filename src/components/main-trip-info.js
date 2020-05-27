@@ -39,14 +39,9 @@ const getTripDuration = (events) => {
   }
 };
 
-// const getTripCost = (events) => {
-//   return events.reduce((acc, event) => acc + event.price, 0);
-// };
-
 const createTripInfoTemplate = (events) => {
   const tripCitiesMarkup = getTripCities(events);
   const tripDurationMarkup = getTripDuration(events);
-  // const tripCost = getTripCost(events);
 
   let tripCost = `0`;
 
