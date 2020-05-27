@@ -1,7 +1,6 @@
 import FilterComponent from "../components/filter.js";
 import {FILTER_TYPE} from "../const.js";
 import {render, replace, RenderPosition} from "../utils/render.js";
-import {getEventsByFilter} from "../utils/filter.js";
 
 export default class FilterController {
   constructor(container, pointsModel) {
@@ -19,12 +18,10 @@ export default class FilterController {
 
   render() {
     const container = this._container;
-    const allEvents = this._pointsModel.getPointsAll();
 
     const filters = Object.values(FILTER_TYPE).map((filterType) => {
       return {
         name: filterType,
-        count: getEventsByFilter(allEvents, filterType).length,
         checked: filterType === this._activeFilterType,
       };
     });
@@ -38,6 +35,15 @@ export default class FilterController {
     } else {
       render(container, this._filterComponent, RenderPosition.BEFOREEND);
     }
+  }
+
+  setDefaultFilter() {
+    this._pointsModel.setFilter(FILTER_TYPE.EVERYTHING);
+    this._filterComponent.setActiveFilter(FILTER_TYPE.EVERYTHING);
+  }
+
+  disableFilter(filter) {
+    this._filterComponent.switchStyle(filter);
   }
 
   _onFilterChange(filterType) {

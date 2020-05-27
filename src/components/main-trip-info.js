@@ -1,5 +1,4 @@
-import AbstractComponent from './abstract-component.js';
-import MainTripPriceComponent from "./main-trip-price.js";
+import AbstractComponent from "./abstract-component.js";
 
 const PointsAmount = {
   ZERO: 0,
@@ -18,10 +17,10 @@ const getTripCities = (events) => {
       eventsLength = events[0].city;
       break;
     case PointsAmount.TWO:
-      eventsLength = events[0].city + ` &mdash; ` + events[1].city;
+      eventsLength = events[0].city + ` &mdash; ` + events[events.length - 1].city;
       break;
     case PointsAmount.THREE:
-      eventsLength = events[0].city + ` &mdash; ` + events[1].city + ` &mdash; ` + events[2].city;
+      eventsLength = events[0].city + ` &mdash; ` + events[1].city + ` &mdash; ` + events[events.length - 1].city;
       break;
     default:
       eventsLength = events[0].city + ` &mdash;` + ` &hellip; ` + `&mdash; ` + events[events.length - 1].city;
@@ -30,7 +29,7 @@ const getTripCities = (events) => {
   return eventsLength;
 };
 
-const getTripInterval = (events) => {
+const getTripDuration = (events) => {
   if (events.length === 0) {
     return ``;
   } else if (events.length === 1) {
@@ -42,27 +41,37 @@ const getTripInterval = (events) => {
 
 const createTripInfoTemplate = (events) => {
   const tripCitiesMarkup = getTripCities(events);
-  const tripIntervalMarkup = getTripInterval(events);
-  const tripPriceMarkup = new MainTripPriceComponent(events).getElement();
+  const tripDurationMarkup = getTripDuration(events);
+
+  let tripCost = `0`;
+
+  if (events.length > 0) {
+    const offerCosts = [];
+    events.map((event) => event.offers.forEach((offer) => offerCosts.push(offer.price)));
+    tripCost = events.map((event) => event.price).reduce((acc, price) => acc + price, 0) + offerCosts.reduce((acc, offerCost) => acc + offerCost, 0);
+  }
 
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
         <h1 class="trip-info__title">${tripCitiesMarkup}</h1>
-        <p class="trip-info__dates">${tripIntervalMarkup}</p>
+        <p class="trip-info__dates">${tripDurationMarkup}</p>
       </div>
-      ${tripPriceMarkup.outerHTML}
+      <p class="trip-info__cost">
+        Total: &euro;&nbsp;
+        <span class="trip-info__cost-value">${tripCost}</span>
+      </p>
     </section>`
   );
 };
 
 export default class MainTripInfo extends AbstractComponent {
-  constructor(events) {
+  constructor(pointsModel) {
     super();
-    this._events = events;
+    this._pointsModel = pointsModel;
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this._events);
+    return createTripInfoTemplate(this._pointsModel.getPointsAll());
   }
 }

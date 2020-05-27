@@ -1,8 +1,9 @@
 import AbstractComponent from "./abstract-component.js";
-import {getDurationTime} from "../utils/common.js";
-import {Direction} from "../mock/event.js";
-import {ucFirstLetter} from "../utils/common.js";
+import {getDurationTime, ucFirstLetter} from "../utils/common.js";
+import {Direction} from "../const.js";
 import moment from "moment";
+
+const MAX_SHOWING_OFFERS = 3;
 
 const createOffersTemplate = (offers) => {
   return offers.map((offer) => {
@@ -13,7 +14,7 @@ const createOffersTemplate = (offers) => {
         &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
       </li>`
     );
-  }).join(``);
+  }).slice(0, MAX_SHOWING_OFFERS).join(``);
 };
 
 const createTypesTemplate = (type, city) => {

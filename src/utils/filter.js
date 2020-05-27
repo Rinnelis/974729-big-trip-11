@@ -1,11 +1,11 @@
 import {FILTER_TYPE} from "../const.js";
 
 export const getFutureEvents = (events) => {
-  return events.filter((point) => point.start > Date.now());
+  return events.filter((event) => event.start > Date.now());
 };
 
 export const getPastEvents = (events) => {
-  return events.filter((point) => point.end < Date.now());
+  return events.filter((event) => event.end < Date.now());
 };
 
 export const getEventsByFilter = (events, filterType) => {

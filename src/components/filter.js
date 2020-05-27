@@ -17,7 +17,7 @@ const createFilterMarkup = (name, isChecked) => {
         value="${name}" 
         ${isChecked ? `checked` : ``}
       />
-      <label class="trip-filters__filter-label" for="filter-${name}"
+      <label id="${name}" class="trip-filters__filter-label" for="filter-${name}"
         >${name}</label
       >
     </div>`
@@ -40,10 +40,22 @@ export default class Filter extends AbstractComponent {
     return createFilterTemplate();
   }
 
+  setActiveFilter(filter) {
+    const element = this.getElement().querySelector(`#filter-${filter}`);
+
+    if (element) {
+      element.checked = true;
+    }
+  }
+
   setFilterChangeHandler(handler) {
     this.getElement().addEventListener(`change`, (evt) => {
       const filterName = getFilterNameById(evt.target.id);
       handler(filterName);
     });
+  }
+
+  switchStyle(filter) {
+    this.getElement().querySelector(`#filter-${filter}`).setAttribute(`disabled`, `disabled`);
   }
 }

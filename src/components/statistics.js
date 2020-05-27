@@ -181,11 +181,11 @@ const renderTransportChart = (transportCtx, points) => {
   });
 };
 
-const renderTimeSpentChart = (timeSpentCtx, points) => {
+const renderTimeChart = (timeCtx, points) => {
   const pointTypes = getType(points);
   const pointTypesTimeSpent = pointTypes.map((type) => getTime(points, type));
 
-  return new Chart(timeSpentCtx, {
+  return new Chart(timeCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
@@ -275,7 +275,7 @@ export default class Statistics extends AbstractSmartComponent {
     this._moneyChart = null;
     this._transportChart = null;
     this._timeChart = null;
-    this._renderCharts();
+    this._render();
   }
 
   getTemplate() {
@@ -292,10 +292,10 @@ export default class Statistics extends AbstractSmartComponent {
   rerender(points) {
     this._points = points;
     super.rerender();
-    this._renderCharts();
+    this._render();
   }
 
-  _renderCharts() {
+  _render() {
     const element = this.getElement();
     const moneyCtx = element.querySelector(`.statistics__chart--money`);
     const transportCtx = element.querySelector(`.statistics__chart--transport`);
@@ -305,13 +305,13 @@ export default class Statistics extends AbstractSmartComponent {
     transportCtx.height = BAR_HEIGHT * 5;
     timeCtx.height = BAR_HEIGHT * 7;
 
-    this._resetCharts();
+    this._reset();
     this._moneyChart = renderMoneyChart(moneyCtx, this._points.getPoints());
     this._transportChart = renderTransportChart(transportCtx, this._points.getPoints());
-    this._timeSpentChart = renderTimeSpentChart(timeCtx, this._points.getPoints());
+    this._timeSpentChart = renderTimeChart(timeCtx, this._points.getPoints());
   }
 
-  _resetCharts() {
+  _reset() {
     if (this._moneyChart) {
       this._moneyChart.destroy();
       this._moneyChart = null;
