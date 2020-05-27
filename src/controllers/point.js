@@ -80,13 +80,6 @@ export default class PointController {
       document.removeEventListener(`keydown`, this._onEscKeyDowm);
     });
 
-    this._eventEditComponent.setFavoriteButtonClickHandler(() => {
-      const newEvent = Point.clone(event);
-      newEvent.isFavorite = !newEvent.isFavorite;
-
-      this._onDataChange(this, event, newEvent);
-    });
-
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
       const formData = this._eventEditComponent.getData();
