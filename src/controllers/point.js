@@ -37,7 +37,7 @@ const parseFormData = (formData) => {
 };
 
 export const EmptyEvent = {
-  id: String(Date.now() + Math.random()),
+  id: `new`,
   city: ``,
   type: `bus`,
   start: new Date(),
@@ -62,10 +62,11 @@ export default class PointController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(event, mode) {
+  render(event, mode, button) {
     const oldEventItemComponent = this._eventItemComponent;
     const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
+    this._button = button;
 
     this._eventItemComponent = new EventItemComponent(event);
     this._eventEditComponent = new EventEditComponent(event);
@@ -89,7 +90,7 @@ export default class PointController {
         saveButtonText: `Saving...`,
       });
 
-      this._onDataChange(this, event, data);
+      this._onDataChange(this, event, data, this._button);
       this._eventEditComponent.activate();
     });
 
@@ -98,7 +99,7 @@ export default class PointController {
         deleteButtonText: `Deleting...`,
       });
 
-      this._onDataChange(this, event, null);
+      this._onDataChange(this, event, null, this._button);
     });
 
     switch (mode) {
@@ -116,6 +117,7 @@ export default class PointController {
           remove(oldEventEditComponent);
         }
         this._onViewChange();
+        this._eventEditComponent.setCreatingView();
         document.addEventListener(`keydown`, this._onEscKeyDown);
         render(this._container, this._eventEditComponent, RenderPosition.AFTERBEGIN);
         break;
@@ -171,7 +173,7 @@ export default class PointController {
 
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
-        this._onDataChange(this, EmptyEvent, null);
+        this._onDataChange(this, EmptyEvent, null, this._button);
       }
       this._replaceEditToEvent();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
