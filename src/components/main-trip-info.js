@@ -32,11 +32,11 @@ const getTripCities = (events) => {
 const getTripDuration = (events) => {
   if (events.length === 0) {
     return ``;
-  } else if (events.length === 1) {
-    return new Date(events[0].start).toDateString().substring(4, 10) + ` &mdash; ` + new Date(events[0].end).toDateString().substring(4, 10);
-  } else {
-    return new Date(events[0].start).toDateString().substring(4, 10) + ` &mdash; ` + (new Date(events[events.length - 1].end)).toDateString().substr(4, 6);
   }
+  if (events.length === 1) {
+    return new Date(events[0].start).toDateString().substring(4, 10) + ` &mdash; ` + new Date(events[0].end).toDateString().substring(4, 10);
+  }
+  return new Date(events[0].start).toDateString().substring(4, 10) + ` &mdash; ` + (new Date(events[events.length - 1].end)).toDateString().substr(4, 6);
 };
 
 const createTripInfoTemplate = (events) => {
