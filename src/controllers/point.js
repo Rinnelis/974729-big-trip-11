@@ -37,7 +37,7 @@ const parseFormData = (formData) => {
 };
 
 export const EmptyEvent = {
-  id: String(Date.now() + Math.random()),
+  id: `new`,
   city: ``,
   type: `bus`,
   start: new Date(),
@@ -117,6 +117,7 @@ export default class PointController {
           remove(oldEventEditComponent);
         }
         this._onViewChange();
+        this._eventEditComponent.setCreatingView();
         document.addEventListener(`keydown`, this._onEscKeyDown);
         render(this._container, this._eventEditComponent, RenderPosition.AFTERBEGIN);
         break;

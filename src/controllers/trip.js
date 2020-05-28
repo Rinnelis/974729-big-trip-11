@@ -138,7 +138,7 @@ export default class TripController {
     this._showedEventControllers = renderEvents(eventListElement, filteredEvents, this._onDataChange, this._onViewChange);
 
     this._creatingPoint = new PointController(eventListElement, this._onDataChange, this._onViewChange);
-    this._creatingPoint.render(EmptyEvent, PointControllerMode.ADDING, button);
+    this._creatingPoint.render(Object.assign({}, EmptyEvent), PointControllerMode.ADDING, button);
     this._onViewChange();
   }
 
@@ -169,7 +169,7 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    if (oldData === EmptyEvent) {
+    if (oldData.id === `new`) {
       this._creatingPoint = null;
       this._newEventButton.removeAttribute(`disabled`);
 
