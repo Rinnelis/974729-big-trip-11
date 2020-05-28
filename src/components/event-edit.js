@@ -77,9 +77,9 @@ const createEventEditTemplate = (event, external) => {
   const cityMarkup = createCitiesTemplate(cities, city);
   const picturesMarkup = createPicturesTemplate(pictures);
 
-  const typesArray = TYPES;
-  const eventTransfersMarkup = typesArray.slice(0, 7).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
-  const eventActivitiesMarkup = typesArray.slice(7, 10).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
+  const types = TYPES;
+  const eventTransfersMarkup = types.slice(0, 7).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
+  const eventActivitiesMarkup = types.slice(7, 10).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
 
   let rightDirection;
   if (type === `Check-in` || type === `Sightseeing` || type === `Restaurant` || type === `check-in` || type === `sightseeing` || type === `restaurant`) {
