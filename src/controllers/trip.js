@@ -2,11 +2,10 @@ import SortComponent, {SortType} from "../components/sort.js";
 import PointController, {Mode as PointControllerMode, EmptyEvent} from "./point.js";
 import EventsComponent from "../components/events.js";
 import NoEventsComponent from "../components/no-events.js";
-import {render, RenderPosition} from "../utils/render.js";
+import {render, RenderPosition, remove} from "../utils/render.js";
 import {FILTER_TYPE} from "../const.js";
 import TripDay from "../components/trip-day.js";
 import TripItemsList from "../components/trip-items-list.js";
-import {newEventButton} from "../main.js";
 import moment from "moment";
 
 const ZERO = 0;
@@ -73,6 +72,7 @@ export default class TripController {
     this._eventsComponent = new EventsComponent();
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
+    this._newEventButton = null;
     this._creatingPoint = null;
 
     this._onDataChange = this._onDataChange.bind(this);
@@ -102,11 +102,10 @@ export default class TripController {
     const points = this._pointsModel.getPoints();
 
     render(container, this._sortComponent, RenderPosition.BEFOREEND);
+    render(container, this._eventsComponent, RenderPosition.BEFOREEND);
 
     if (points.length === ZERO) {
       render(container, this._noEventsComponent, RenderPosition.BEFOREEND);
-    } else {
-      render(container, this._eventsComponent, RenderPosition.BEFOREEND);
     }
 
     const eventListElement = this._eventsComponent.getElement();
@@ -116,12 +115,17 @@ export default class TripController {
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
   }
 
-  createPoint() {
+  createPoint(button) {
     if (this._creatingPoint) {
       return;
     }
 
-    newEventButton.setAttribute(`disabled`, `disabled`);
+    if (this._noEventsComponent) {
+      remove(this._noEventsComponent);
+    }
+
+    this._newEventButton = button;
+    this._newEventButton.setAttribute(`disabled`, `disabled`);
     const eventListElement = this._eventsComponent.getElement();
 
     const sortedEvents = getGroupPoints(getSortedEvents(this._pointsModel.getPointsAll(), SortType.EVENT));
@@ -134,7 +138,7 @@ export default class TripController {
     this._showedEventControllers = renderEvents(eventListElement, filteredEvents, this._onDataChange, this._onViewChange);
 
     this._creatingPoint = new PointController(eventListElement, this._onDataChange, this._onViewChange);
-    this._creatingPoint.render(EmptyEvent, PointControllerMode.ADDING);
+    this._creatingPoint.render(EmptyEvent, PointControllerMode.ADDING, button);
     this._onViewChange();
   }
 
@@ -151,6 +155,12 @@ export default class TripController {
     this._removePoints();
     this._showedEventControllers = renderEvents(eventListElement, getGroupPoints(this._pointsModel.getPoints()), this._onDataChange, this._onViewChange);
 
+    if (this._pointsModel.getPointsAll().length <= 0) {
+      render(this._container, this._noEventsComponent);
+    } else {
+      remove(this._noEventsComponent);
+    }
+
     if (this._pointsModel.getPoints().length === 0) {
       this._filterController.disableFilter(this._pointsModel.getActiveFilterType());
     }
@@ -161,7 +171,7 @@ export default class TripController {
   _onDataChange(pointController, oldData, newData) {
     if (oldData === EmptyEvent) {
       this._creatingPoint = null;
-      newEventButton.removeAttribute(`disabled`);
+      this._newEventButton.removeAttribute(`disabled`);
 
       if (newData === null) {
         pointController.destroy();
