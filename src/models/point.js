@@ -1,15 +1,15 @@
 export default class Point {
-  constructor(data) {
-    this.id = data[`id`] || ``;
-    this.type = data[`type`];
-    this.city = data[`destination`][`name`];
-    this.description = data[`destination`][`description`];
-    this.price = data[`base_price`];
-    this.start = new Date(data[`date_from`]);
-    this.end = new Date(data[`date_to`]);
-    this.offers = data[`offers`];
-    this.pictures = data[`destination`][`pictures`];
-    this.isFavorite = Boolean(data[`is_favorite`]);
+  constructor(point) {
+    this.id = point[`id`] || ``;
+    this.type = point[`type`];
+    this.city = point[`destination`][`name`];
+    this.description = point[`destination`][`description`];
+    this.price = point[`base_price`];
+    this.start = new Date(point[`date_from`]);
+    this.end = new Date(point[`date_to`]);
+    this.offers = point[`offers`];
+    this.pictures = point[`destination`][`pictures`];
+    this.isFavorite = Boolean(point[`is_favorite`]);
   }
 
   toRAW() {
@@ -29,15 +29,15 @@ export default class Point {
     };
   }
 
-  static parsePoint(data) {
-    return new Point(data);
+  static parsePoint(point) {
+    return new Point(point);
   }
 
-  static parsePoints(data) {
-    return data.map(Point.parsePoint);
+  static parsePoints(point) {
+    return point.map(Point.parsePoint);
   }
 
-  static clone(data) {
-    return new Point(data.toRAW());
+  static clone(point) {
+    return new Point(point.toRAW());
   }
 }

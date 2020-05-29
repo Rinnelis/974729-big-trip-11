@@ -182,7 +182,6 @@ export default class TripController {
           this._pointsModel.addPoint(pointModel);
           pointController.render(newData, PointControllerMode.DEFAULT);
           this._showedEventControllers = [].concat(pointController, this._showedEventControllers);
-          this._filterController.setDefaultFilter();
           this._updatePoints();
         })
         .catch(() => {
