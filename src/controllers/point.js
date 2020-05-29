@@ -18,6 +18,7 @@ const parseFormData = (formData) => {
   const checkedOffers = [...document.querySelectorAll(`.event__offer-checkbox:checked + label[for^="event"]`)];
 
   return new Point({
+    'id': `0`,
     'type': formData.get(`event-type`),
     'destination': {
       'description': destination.description,
@@ -104,7 +105,7 @@ export default class PointController {
     this._eventEditComponent.setFavoriteButtonClickHandler((isFavorite) => {
       const newEvent = Point.clone(event);
       newEvent.isFavorite = isFavorite;
-      this._onDataChange(this, event, newEvent, this._button);
+      this._onDataChange(this, event, newEvent, this._button, true);
     });
 
     switch (mode) {

@@ -13,7 +13,8 @@ export default class TripInfoController {
   render() {
     const container = this._container;
     const oldComponent = this._component;
-    this._component = new MainTripInfo(this._pointsModel);
+    const sortedPoints = this._pointsModel.getPointsAll().sort((current, next) => new Date(current.end) - new Date(next.end));
+    this._component = new MainTripInfo(this._pointsModel, sortedPoints);
 
     if (oldComponent) {
       replace(this._component, oldComponent);

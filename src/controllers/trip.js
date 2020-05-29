@@ -168,10 +168,10 @@ export default class TripController {
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
-  _onDataChange(pointController, oldData, newData) {
+  _onDataChange(pointController, oldData, newData, button = this._newEventButton, isFavoriteUpdate = false) {
     if (oldData.id === `new`) {
       this._creatingPoint = null;
-      this._newEventButton.removeAttribute(`disabled`);
+      button.removeAttribute(`disabled`);
 
       if (newData === null) {
         pointController.destroy();
@@ -204,6 +204,9 @@ export default class TripController {
            const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
 
            if (isSuccess) {
+             if (isFavoriteUpdate) {
+               return;
+             }
              pointController.render(pointModel, PointControllerMode.DEFAULT);
              this._updatePoints();
            }

@@ -35,20 +35,19 @@ const getTripCities = (events) => {
   return eventsLength;
 };
 
-const getTripDuration = (events) => {
+const getTripDuration = (events, sortedPoints) => {
   if (events.length === 0) {
     return ``;
   }
   if (events.length === 1) {
     return new Date(events[0].start).toDateString().substring(SubstringNumber.FOUR, SubstringNumber.TEN) + ` &mdash; ` + new Date(events[0].end).toDateString().substring(SubstringNumber.FOUR, SubstringNumber.TEN);
   }
-  const sortedEvents = events.sort((current, next) => new Date(current.start) - new Date(next.start));
-  return new Date(sortedEvents[0].start).toDateString().substring(SubstringNumber.FOUR, SubstringNumber.TEN) + ` &mdash; ` + (new Date(sortedEvents[sortedEvents.length - 1].end)).toDateString().substr(SubstringNumber.FOUR, SubstringNumber.SIX);
+  return new Date(events[0].start).toDateString().substring(SubstringNumber.FOUR, SubstringNumber.TEN) + ` &mdash; ` + (new Date(sortedPoints[sortedPoints.length - 1].end)).toDateString().substr(SubstringNumber.FOUR, SubstringNumber.SIX);
 };
 
-const createTripInfoTemplate = (events) => {
+const createTripInfoTemplate = (events, sortedPoints) => {
   const tripCitiesMarkup = getTripCities(events);
-  const tripDurationMarkup = getTripDuration(events);
+  const tripDurationMarkup = getTripDuration(events, sortedPoints);
 
   let tripCost = `0`;
 
@@ -73,12 +72,13 @@ const createTripInfoTemplate = (events) => {
 };
 
 export default class MainTripInfo extends AbstractComponent {
-  constructor(pointsModel) {
+  constructor(pointsModel, sortedPoints) {
     super();
     this._pointsModel = pointsModel;
+    this._sortedPoints = sortedPoints;
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this._pointsModel.getPointsAll());
+    return createTripInfoTemplate(this._pointsModel.getPointsAll(), this._sortedPoints);
   }
 }

@@ -13,7 +13,7 @@ import {FILTER_TYPE} from "./const.js";
 import {getEventsByFilter} from "./utils/filter.js";
 import {render, RenderPosition, remove} from "./utils/render.js";
 
-const AUTHORIZATION = `Basic nivbl9==83ebvlaKHGS`;
+const AUTHORIZATION = `Basic =83ebvlaKHGS`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `big-trip-localstorage`;
 const STORE_VER = `v1`;
