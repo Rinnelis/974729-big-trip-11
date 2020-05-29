@@ -13,7 +13,7 @@ import {FILTER_TYPE} from "./const.js";
 import {getEventsByFilter} from "./utils/filter.js";
 import {render, RenderPosition, remove} from "./utils/render.js";
 
-const AUTHORIZATION = `Basic n4254ivblebvla42KHGS`;
+const AUTHORIZATION = `Basic nivbl983ebvlaKHGS`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `big-trip-localstorage`;
 const STORE_VER = `v1`;
@@ -24,13 +24,13 @@ const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 
 const siteHeaderElement = document.querySelector(`.page-header__container`);
-const tripHeader = siteHeaderElement.querySelector(`.trip-main`);
+const tripHeaderElement = siteHeaderElement.querySelector(`.trip-main`);
 const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
 const mainContentElement = document.querySelector(`.page-main .page-body__container`);
 
 const pointsModel = new PointsModel();
 const siteMenuComponent = new SiteMenuComponent();
-const tripInfoController = new TripInfoController(tripHeader, pointsModel);
+const tripInfoController = new TripInfoController(tripHeaderElement, pointsModel);
 const filterController = new FilterController(tripControlsElement, pointsModel);
 const boardComponent = new BoardComponent();
 const tripController = new TripController(boardComponent, filterController, pointsModel, apiWithProvider);

@@ -18,12 +18,7 @@ const createOffersTemplate = (offers) => {
 };
 
 const createTypesTemplate = (type, city) => {
-  let rightDirection;
-  if (type === `check-in` || type === `sightseeing` || type === `restaurant`) {
-    rightDirection = Direction.IN;
-  } else {
-    rightDirection = Direction.TO;
-  }
+  const rightDirection = type === `check-in` || type === `sightseeing` || type === `restaurant` ? Direction.IN : Direction.TO;
 
   return (
     `<div class="event__type">

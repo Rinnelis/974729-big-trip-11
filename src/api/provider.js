@@ -5,6 +5,11 @@ const isOnline = () => {
   return window.navigator.onLine;
 };
 
+const URL = {
+  DESTINATIONS: `destinations`,
+  OFFERS: `offers`
+};
+
 const getSyncedPoints = (items) => {
   return items.filter(({success}) => success)
     .map(({payload}) => payload.point);
@@ -26,18 +31,26 @@ export default class Provider {
 
   getDestinations() {
     if (isOnline()) {
-      return this._api.getDestinations();
+      return this._api.getDestinations()
+      .then((destinations) => {
+        this._store.setDestinations(destinations, URL.DESTINATIONS);
+        return destinations;
+      });
     }
 
-    return Promise.reject(`offline logic is not implemented`);
+    return Promise.resolve(this._store.getItems(URL.DESTINATIONS));
   }
 
   getOffers() {
     if (isOnline()) {
-      return this._api.getOffers();
+      return this._api.getOffers()
+      .then((offers) => {
+        this._store.setOffers(offers, URL.OFFERS);
+        return offers;
+      });
     }
 
-    return Promise.reject(`offline logic is not implemented`);
+    return Promise.resolve(this._store.getItems(URL.OFFERS));
   }
 
   getPoints() {

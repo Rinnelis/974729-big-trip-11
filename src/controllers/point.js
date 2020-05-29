@@ -102,6 +102,12 @@ export default class PointController {
       this._onDataChange(this, event, null, this._button);
     });
 
+    this._eventEditComponent.setFavoriteButtonClickHandler((isFavorite) => {
+      const newEvent = Point.clone(event);
+      newEvent.isFavorite = isFavorite;
+      this._onDataChange(this, event, newEvent, this._button);
+    });
+
     switch (mode) {
       case Mode.DEFAULT:
         if (oldEventEditComponent && oldEventItemComponent) {

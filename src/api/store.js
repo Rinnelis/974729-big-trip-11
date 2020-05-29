@@ -4,9 +4,9 @@ export default class Store {
     this._storeKey = key;
   }
 
-  getItems() {
+  getItems(key = this._storeKey) {
     try {
-      return JSON.parse(this._storage.getItem(this._storeKey)) || {};
+      return JSON.parse(this._storage.getItem(key)) || {};
     } catch (err) {
       return {};
     }
@@ -40,5 +40,13 @@ export default class Store {
         this._storeKey,
         JSON.stringify(store)
     );
+  }
+
+  setOffers(offers, key) {
+    this._storage.setItem(key, JSON.stringify(offers));
+  }
+
+  setDestinations(destinations, key) {
+    this._storage.setItem(key, JSON.stringify(destinations));
   }
 }

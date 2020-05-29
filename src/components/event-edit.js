@@ -9,8 +9,14 @@ import moment from "moment";
 import "flatpickr/dist/flatpickr.min.css";
 
 const DefaultData = {
-  deleteButtonText: `Delete`,
-  saveButtonText: `Save`,
+  DELETE: `Delete`,
+  SAVE: `Save`,
+};
+
+const SliceNumber = {
+  ZERO: 0,
+  SEVEN: 7,
+  TEN: 10
 };
 
 const createOffersTemplate = (event, offers) => {
@@ -78,8 +84,8 @@ const createEventEditTemplate = (event, external) => {
   const picturesMarkup = createPicturesTemplate(pictures);
 
   const types = TYPES;
-  const eventTransfersMarkup = types.slice(0, 7).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
-  const eventActivitiesMarkup = types.slice(7, 10).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
+  const eventTransfersMarkup = types.slice(SliceNumber.ZERO, SliceNumber.SEVEN).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
+  const eventActivitiesMarkup = types.slice(SliceNumber.SEVEN, SliceNumber.TEN).map((typeInstance) => createEventTypeMarkup(typeInstance, type)).join(`\n`);
 
   let rightDirection;
   if (type === `Check-in` || type === `Sightseeing` || type === `Restaurant` || type === `check-in` || type === `sightseeing` || type === `restaurant`) {
@@ -92,8 +98,8 @@ const createEventEditTemplate = (event, external) => {
   const offerMarkup = createOffersTemplate(event, offersList);
   const isCheckedFavouriteButton = isFavorite ? `checked` : ``;
 
-  const deleteButtonText = externalData.deleteButtonText;
-  const saveButtonText = externalData.saveButtonText;
+  const deleteButtonText = externalData.DELETE;
+  const saveButtonText = externalData.SAVE;
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -241,6 +247,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._description = event.description;
     this._offers = event.offers;
     this._pictures = event.pictures;
+    this._isFavorite = event.isFavorite;
     this._externalData = DefaultData;
 
     this._element = null;
@@ -263,6 +270,7 @@ export default class EventEdit extends AbstractSmartComponent {
       description: this._description,
       offers: this._offers,
       pictures: this._pictures,
+      isFavorite: this._isFavorite,
       externalData: this._externalData,
     });
   }
@@ -344,7 +352,10 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setFavoriteButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-checkbox`)
-      .addEventListener(`click`, handler);
+      .addEventListener(`click`, () => {
+        this._isFavorite = !this._isFavorite;
+        handler(this._isFavorite);
+      });
 
     this._favoriteClickHandler = handler;
   }
@@ -379,6 +390,16 @@ export default class EventEdit extends AbstractSmartComponent {
       this.rerender();
     });
 
+    eventDestination.addEventListener(`change`, (evt) => {
+      evt.preventDefault();
+      const index = DestinationsList.getList().findIndex((destination) => destination.name === this._city);
+      if (index === -1) {
+        eventDestination.setCustomValidity(`Choose a city from the list`);
+        return;
+      }
+      this.rerender();
+    });
+
     element.querySelector(`.event__input--destination`)
     .addEventListener(`change`, (evt) => {
       this._city = evt.target.value;
@@ -391,23 +412,21 @@ export default class EventEdit extends AbstractSmartComponent {
       this.rerender();
     });
 
-    eventDestination.addEventListener(`change`, (evt) => {
-      evt.preventDefault();
-      const index = DestinationsList.getList().findIndex((destination) => destination.name === this._city);
-      if (index === -1) {
-        eventDestination.setCustomValidity(`Choose a city from the list`);
-        return;
-      }
-      this._eventDestination = DestinationsList.getList()[index];
-      this.rerender();
-    });
-
     const offersList = element.querySelectorAll(`.event__offer-checkbox`);
     for (const offer of offersList) {
       offer.addEventListener(`change`, () => {
         offer.toggleAttribute(`checked`);
       });
     }
+
+    element.querySelector(`#event-start-time-1`)
+    .addEventListener(`change`, (evt) => {
+      this._event.start = evt.target.value;
+      if (this._event.end < evt.target.value) {
+        this._event.end = this._event.start;
+      }
+      this._applyFlatpickr();
+    });
   }
 
   _applyFlatpickr() {
@@ -422,11 +441,17 @@ export default class EventEdit extends AbstractSmartComponent {
     const options = {
       allowInput: true,
       dateFormat: `d/m/y H:i`,
-      minDate: this._event.start,
-      enableTime: true
+      enableTime: true,
+      minDate: this._event.start || `today`
     };
 
-    this._flatpickrStartDate = flatpickr(element.querySelector(`#event-start-time-1`), Object.assign({}, options, {defaultDate: this._event.start}));
-    this._flatpickrEndDate = flatpickr(element.querySelector(`#event-end-time-1`), Object.assign({}, options, {defaultDate: this._event.end}));
+    this._flatpickrStartDate = flatpickr(element.querySelector(`#event-start-time-1`), Object.assign({}, options, {
+      defaultDate: this._event.start || `today`,
+    }));
+
+    this._flatpickrEndDate = flatpickr(element.querySelector(`#event-end-time-1`), Object.assign({}, options, {
+      defaultDate: this._event.end || `today`,
+      minDate: this._event.start,
+    }));
   }
 }

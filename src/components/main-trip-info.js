@@ -7,6 +7,12 @@ const PointsAmount = {
   THREE: 3
 };
 
+const SubstringNumber = {
+  FOUR: 4,
+  SIX: 6,
+  TEN: 10
+};
+
 const getTripCities = (events) => {
   let eventsLength = 0;
   switch (events.length) {
@@ -34,9 +40,10 @@ const getTripDuration = (events) => {
     return ``;
   }
   if (events.length === 1) {
-    return new Date(events[0].start).toDateString().substring(4, 10) + ` &mdash; ` + new Date(events[0].end).toDateString().substring(4, 10);
+    return new Date(events[0].start).toDateString().substring(SubstringNumber.FOUR, SubstringNumber.TEN) + ` &mdash; ` + new Date(events[0].end).toDateString().substring(SubstringNumber.FOUR, SubstringNumber.TEN);
   }
-  return new Date(events[0].start).toDateString().substring(4, 10) + ` &mdash; ` + (new Date(events[events.length - 1].end)).toDateString().substr(4, 6);
+  const sortedEvents = events.sort((current, next) => new Date(current.start) - new Date(next.start));
+  return new Date(sortedEvents[0].start).toDateString().substring(SubstringNumber.FOUR, SubstringNumber.TEN) + ` &mdash; ` + (new Date(sortedEvents[sortedEvents.length - 1].end)).toDateString().substr(SubstringNumber.FOUR, SubstringNumber.SIX);
 };
 
 const createTripInfoTemplate = (events) => {
