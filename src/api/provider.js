@@ -1,13 +1,10 @@
 import Point from "../models/point.js";
 import {nanoid} from "nanoid";
+import DestinationsList from "../models/destinations.js";
+import OffersList from "../models/offers.js";
 
 const isOnline = () => {
   return window.navigator.onLine;
-};
-
-const URL = {
-  DESTINATIONS: `destinations`,
-  OFFERS: `offers`
 };
 
 const getSyncedPoints = (items) => {
@@ -32,25 +29,31 @@ export default class Provider {
   getDestinations() {
     if (isOnline()) {
       return this._api.getDestinations()
-      .then((destinations) => {
-        this._store.setDestinations(destinations, URL.DESTINATIONS);
-        return destinations;
-      });
+        .then((destinations) => {
+          this._store.setDestinations(destinations);
+
+          return destinations;
+        })
+        .then(DestinationsList.setList);
     }
 
-    return Promise.resolve(this._store.getItems(URL.DESTINATIONS));
+    const storeDestinations = this._store.getDestinations();
+    return Promise.resolve(storeDestinations);
   }
 
   getOffers() {
     if (isOnline()) {
       return this._api.getOffers()
-      .then((offers) => {
-        this._store.setOffers(offers, URL.OFFERS);
-        return offers;
-      });
+        .then((offers) => {
+          this._store.setOffers(offers);
+
+          return offers;
+        })
+        .then(OffersList.setList);
     }
 
-    return Promise.resolve(this._store.getItems(URL.OFFERS));
+    const storeOffers = this._store.getOffers();
+    return Promise.resolve(storeOffers);
   }
 
   getPoints() {

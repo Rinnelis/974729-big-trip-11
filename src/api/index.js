@@ -1,6 +1,4 @@
 import Point from "../models/point.js";
-import OffersList from "../models/offers.js";
-import DestinationsList from "../models/destinations.js";
 
 const Method = {
   GET: `GET`,
@@ -40,16 +38,14 @@ export default class API {
     return this._load({
       url: `destinations`
     })
-    .then((response) => response.json())
-    .then(DestinationsList.setList);
+    .then((response) => response.json());
   }
 
   getOffers() {
     return this._load({
       url: `offers`
     })
-    .then((response) => response.json())
-    .then(OffersList.setList);
+    .then((response) => response.json());
   }
 
   createPoint(point) {
