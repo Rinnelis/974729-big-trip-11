@@ -390,26 +390,22 @@ export default class EventEdit extends AbstractSmartComponent {
       this.rerender();
     });
 
-    eventDestination.addEventListener(`change`, (evt) => {
-      evt.preventDefault();
-      const index = DestinationsList.getList().findIndex((destination) => destination.name === this._city);
-      if (index === -1) {
-        eventDestination.setCustomValidity(`Choose a city from the list`);
-        return;
-      }
-      this.rerender();
-    });
-
     element.querySelector(`.event__input--destination`)
     .addEventListener(`change`, (evt) => {
-      this._city = evt.target.value;
-      this._pictures = DestinationsList.getList().find((destination) => destination.name === this._city).pictures;
-      this._description = DestinationsList.getList().find((destination) => destination.name === this._city).description;
+      const index = DestinationsList.getList().findIndex((destination) => destination.name === evt.target.value);
+      if (index === -1) {
+        eventDestination.setCustomValidity(`Choose a city from the list`);
+        evt.target.value = ``;
+      } else {
+        this._city = evt.target.value;
+        this._pictures = DestinationsList.getList().find((destination) => destination.name === this._city).pictures;
+        this._description = DestinationsList.getList().find((destination) => destination.name === this._city).description;
 
-      this._event.city = this._city;
-      this._event.pictures = this._pictures;
-      this._event.description = this._description;
-      this.rerender();
+        this._event.city = this._city;
+        this._event.pictures = this._pictures;
+        this._event.description = this._description;
+        this.rerender();
+      }
     });
 
     const offersList = element.querySelectorAll(`.event__offer-checkbox`);
