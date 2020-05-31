@@ -1,7 +1,7 @@
 import Point from "../models/point.js";
-import {nanoid} from "nanoid";
 import DestinationsList from "../models/destinations.js";
 import OffersList from "../models/offers.js";
+import {nanoid} from "nanoid";
 
 const isOnline = () => {
   return window.navigator.onLine;
@@ -38,6 +38,7 @@ export default class Provider {
     }
 
     const storeDestinations = this._store.getDestinations();
+    DestinationsList.setList(storeDestinations);
     return Promise.resolve(storeDestinations);
   }
 
@@ -53,6 +54,7 @@ export default class Provider {
     }
 
     const storeOffers = this._store.getOffers();
+    OffersList.setList(storeOffers);
     return Promise.resolve(storeOffers);
   }
 

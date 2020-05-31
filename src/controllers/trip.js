@@ -72,7 +72,7 @@ export default class TripController {
     this._eventsComponent = new EventsComponent();
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
-    this._newEventButton = null;
+    this._newEventButton = document.querySelector(`.trip-main__event-add-btn`);
     this._creatingPoint = null;
 
     this._onDataChange = this._onDataChange.bind(this);
@@ -86,11 +86,14 @@ export default class TripController {
 
   hide() {
     this._eventsComponent.hide();
+    this._newEventButton.setAttribute(`disabled`, `disabled`);
     this._updatePoints();
   }
 
   show() {
+    this._newEventButton.removeAttribute(`disabled`);
     this._onSortTypeChange(SortType.EVENT);
+    this._sortType = SortType.EVENT;
     const sort = document.querySelector(`#sort-event`);
     sort.checked = true;
     this._eventsComponent.show();
@@ -155,17 +158,15 @@ export default class TripController {
     this._removePoints();
     this._showedEventControllers = renderEvents(eventListElement, getGroupPoints(this._pointsModel.getPoints()), this._onDataChange, this._onViewChange);
 
-    if (this._pointsModel.getPointsAll().length <= 0) {
+    if (this._pointsModel.getPointsAll().length <= ZERO) {
       render(this._container, this._noEventsComponent);
     } else {
       remove(this._noEventsComponent);
     }
 
-    if (this._pointsModel.getPoints().length === 0) {
+    if (this._pointsModel.getPoints().length === ZERO) {
       this._filterController.disableFilter(this._pointsModel.getActiveFilterType());
     }
-
-    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
   _onDataChange(pointController, oldData, newData, button = this._newEventButton, isFavoriteUpdate = false) {
@@ -223,6 +224,7 @@ export default class TripController {
 
   _onSortTypeChange(sortType) {
     this._removePoints();
+    this._sortType = sortType;
     const eventListElement = this._eventsComponent.getElement();
     const sortedEvents = getSortedEvents(this._pointsModel.getPoints(), sortType);
 

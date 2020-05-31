@@ -24,8 +24,8 @@ const createFilterMarkup = (name, isChecked) => {
   );
 };
 
-const createFilterTemplate = () => {
-  const filtersMarkup = [`everything`, `future`, `past`].map((filter, i) => createFilterMarkup(filter, i === 0)).join(`\n`);
+const createFilterTemplate = (choosenFilter) => {
+  const filtersMarkup = [`everything`, `future`, `past`].map((filter) => createFilterMarkup(filter, filter === choosenFilter)).join(`\n`);
 
   return (
     `<form class="trip-filters" action="#" method="get">
@@ -36,8 +36,13 @@ const createFilterTemplate = () => {
 };
 
 export default class Filter extends AbstractComponent {
+  constructor(filter) {
+    super();
+    this._filter = filter;
+  }
+
   getTemplate() {
-    return createFilterTemplate();
+    return createFilterTemplate(this._filter);
   }
 
   setActiveFilter(filter) {

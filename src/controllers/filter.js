@@ -18,16 +18,8 @@ export default class FilterController {
 
   render() {
     const container = this._container;
-
-    const filters = Object.values(FILTER_TYPE).map((filterType) => {
-      return {
-        name: filterType,
-        checked: filterType === this._activeFilterType,
-      };
-    });
-
     const oldComponent = this._filterComponent;
-    this._filterComponent = new FilterComponent(filters);
+    this._filterComponent = new FilterComponent(this._activeFilterType);
     this._filterComponent.setFilterChangeHandler(this._onFilterChange);
 
     if (oldComponent) {
