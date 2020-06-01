@@ -73,6 +73,7 @@ export default class TripController {
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
     this._newEventButton = document.querySelector(`.trip-main__event-add-btn`);
+    this._sortType = SortType.EVENT;
     this._creatingPoint = null;
 
     this._onDataChange = this._onDataChange.bind(this);
@@ -167,6 +168,8 @@ export default class TripController {
     if (this._pointsModel.getPoints().length === ZERO) {
       this._filterController.disableFilter(this._pointsModel.getActiveFilterType());
     }
+
+    this._onSortTypeChange(this._sortType);
   }
 
   _onDataChange(pointController, oldData, newData, button = this._newEventButton, isFavoriteUpdate = false) {
